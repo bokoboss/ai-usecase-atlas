@@ -3,7 +3,7 @@ import type { Filters, UseCase } from '../types'
 const normalize = (value: unknown) => String(value ?? '').toLocaleLowerCase('th-TH').trim()
 
 const fields: Array<[keyof UseCase, number]> = [
-  ['title', 9], ['adoptionHook', 5], ['painPoint', 4], ['desiredResult', 4], ['inputs', 3],
+  ['title', 10], ['painPoint', 5], ['desiredResult', 5], ['inputs', 3], ['adoptionHook', 1],
   ['tags', 3], ['software', 3], ['primaryUsers', 2], ['discipline', 2], ['momentOfNeed', 2],
   ['integrationPattern', 2], ['categoryTh', 2], ['category', 1],
 ]
@@ -24,6 +24,12 @@ const synonymGroups = [
   ['ผู้บริหาร','md','management','executive','decision'],
   ['อัตโนมัติ','automation','script','python','vba','powershell','codex'],
   ['ตรวจ','qa','qc','review','audit','check','validation'],
+  ['เลขา','ธุรการ','secretary','admin','administrator','ประสานงาน','coordinator'],
+  ['แบบ','drawing','แบบก่อสร้าง','shop drawing','draft'],
+  ['ปริมาณ','quantity','boq','takeoff','estimate','ประมาณราคา','cost estimate'],
+  ['ระบายน้ำ','drainage','stormwater','culvert','ท่อระบายน้ำ'],
+  ['ความปลอดภัย','safety','road safety','rsa','audit'],
+  ['ที่จอดรถ','parking','curbside','loading','drop-off','pick-up'],
 ]
 
 const thaiSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter('th', { granularity: 'word' }) : null
@@ -59,7 +65,8 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
   if (!terms.length) {
     return [...filtered].sort((a, b) => {
       const priority = { High: 3, P1: 3, Medium: 2, P2: 2, Low: 1, P3: 1 } as Record<string, number>
-      return (priority[b.priority] ?? 0) - (priority[a.priority] ?? 0) || Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) || a.id.localeCompare(b.id)
+      const beginner = (item: UseCase) => item.level <= 2 ? 3 : item.level === 3 ? 2 : item.level === 4 ? 1 : 0
+      return beginner(b) - beginner(a) || (priority[b.priority] ?? 0) - (priority[a.priority] ?? 0) || Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) || a.id.localeCompare(b.id)
     })
   }
 
@@ -77,8 +84,13 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
       }
       const title = normalize(item.title)
       const phrase = normalize(query)
-      if (phrase && title.includes(phrase)) score += 20
-      if (item.isNew) score += 0.5
+      const software = normalize(item.software)
+      const category = normalize(`${item.categoryTh} ${item.category}`)
+      if (phrase && title.includes(phrase)) score += 24
+      if (phrase && software.includes(phrase)) score += 12
+      if (phrase && category.includes(phrase)) score += 8
+      score += item.level <= 2 ? 1.5 : item.level === 3 ? 0.8 : 0
+      if (item.isNew) score += 0.25
       return { item, score }
     })
     .filter(({ score }) => score > 0)
