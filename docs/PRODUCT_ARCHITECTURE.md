@@ -2,46 +2,38 @@
 
 ## Product statement
 
-AI Use Case Atlas is a discovery and adoption product, not just a prompt library. Its core question is:
+AI Use Case Atlas is an **AI adoption/discovery product**, not a prompt dump. Its core question is:
 
 > งานที่กำลังทำอยู่ตอนนี้ AI ช่วยตรงไหนได้บ้าง?
 
-The product is optimized for staff who completed AI training but still do not habitually use AI because they do not know what to try, do not feel fluent, or assume AI will add extra work.
+The current corpus contains **600 use cases + 800 quick ideas**.
 
 ## Primary journeys
 
 ### 1. Start from today's task
-Search in natural Thai/English, open a relevant use case, copy the prompt starter, and see the required Human / Engineering Check.
+Search in natural Thai/English, open a use case, copy a prompt starter, and see the required Human / Engineering Check.
 
-### 2. Start from role
-Filter by PM, Engineer, Secretary, Senior, MD, etc. Progress from L1/L2 quick wins toward L4/L5 workflows.
+### 2. Guided Finder
+Choose current task + role + software + preferred maturity level. The finder applies structured filters and natural-language search together.
 
-### 3. Start from software
-Find AI-assisted workflows around Excel, AutoCAD, Civil 3D, Revit, VISSIM and other existing tools.
+### 3. Start from role
+PM, traffic/highway/rail/structural engineers, cost/QA, secretary/admin, drafting/BIM/GIS, management.
 
-### 4. Start from inspiration
-Browse Quick Ideas when the user still does not know what to try.
+### 4. Start from software
+Excel, AutoCAD/Civil 3D, OpenRoads/OpenRail, Revit/Dynamo/Navisworks, QGIS, Bluebeam, VISSIM/Synchro/SIDRA, Power BI, Python/VBA/PowerShell, etc.
+
+### 5. Start from inspiration
+Search/browse 800 Quick Ideas, then jump to the linked full use case.
 
 ## Information architecture
 
-Top-level:
-- Search / Discover
+- Task-first search
+- Guided Finder
 - Role pathways
 - Software pathways
 - Quick Ideas
-- Use-case detail
+- Use-case detail + source links + related cases
 - GitHub / contribution
-
-Use-case detail:
-- ID, surface, level
-- Pain Point
-- Desired Result
-- Moment of Need
-- Role
-- Software
-- Prompt Starter
-- Human / Engineering Check
-- Tags / related cases
 
 ## AI maturity model
 
@@ -51,20 +43,27 @@ Use-case detail:
 - L4 Workflow
 - L5 Build & Automate
 
+## Search strategy v1
+
+Field-weighted lexical search + Thai word segmentation + domain synonyms + structured filters.
+
+Important exact domain terms remain first-class (VISSIM, OpenRoads, Civil 3D, TOR, BOQ). The app should not hide them behind semantic-only retrieval.
+
 ## v1 principles
 
-- Task-first, not tool-first
-- Fast first success
-- Human verification is always visible
-- Static-first architecture
-- No paid AI API required for discovery
-- Data layer isolated from presentation layer
+- task-first, not tool-first
+- fast first success
+- human verification always visible
+- static-first/no paid backend required
+- source traceability for version-sensitive workflows
+- data layer isolated from presentation layer
 
 ## Later product metrics
 
 - search → detail open rate
 - detail → copy prompt rate
-- repeat visits
-- common filters
+- Guided Finder completion
 - zero-result queries
-- useful / tried feedback
+- software/role demand gaps
+- repeat visits
+- useful / tried / needs-update feedback

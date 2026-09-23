@@ -1,81 +1,81 @@
 # Backend Architecture
 
-## v1 decision: static-first
+## v1: static-first
 
-The corpus is reference data: 450 use cases + 500 quick ideas. It is read-heavy and changes slowly. A database in v1 would add hosting, auth, migration and operations without improving the core discovery experience.
-
-v1:
+The corpus is reference content (currently 600 use cases + 800 quick ideas). It is read-heavy and changes much less frequently than transactional data.
 
 ```text
-Master Inventory
-   ↓
-JSON / typed data export
-   ↓
-Repository / search layer
-   ↓
+Master inventory / researched additions
+        ↓
+versioned JSON data
+        ↓
+repository + weighted search layer
+        ↓
 React UI
 ```
 
-The UI should never depend directly on where data is stored. That boundary allows later migration to a real backend.
+No backend/API/database is required for the current public discovery experience.
+
+## Why this is deliberate
+
+- zero database hosting cost
+- no authentication requirement for public content
+- Git diff/version history for every content change
+- fast client-side search at this corpus size
+- fewer privacy/security surfaces
 
 ## Phase 2 triggers
 
 Add a backend when requirements include:
-- frequent multi-user content editing
-- favorites/history
-- feedback analytics
-- private/internal use cases
-- semantic search
+- frequent multi-user editing and approval workflow
+- favorites/history/profile-based pathways
+- feedback analytics / search telemetry
+- private/internal-only use cases
+- semantic/hybrid search at larger scale
 - admin CMS
 - AI-generated recommendations
-- approval/version lifecycle
 
-## Suggested Phase 2 stack
+## Suggested Phase 2
 
 ```text
 React frontend
    │
    ├─ GET /api/use-cases
    ├─ GET /api/use-cases/:id
-   ├─ GET /api/search
+   ├─ GET /api/search?q=&role=&software=
    ├─ POST /api/feedback
-   └─ POST /api/admin/use-cases
-          │
-   Serverless API
+   └─ admin/editor endpoints
           │
    PostgreSQL / Supabase
       ├─ use_cases
-      ├─ roles
-      ├─ software
-      ├─ tags
+      ├─ source_links
+      ├─ roles / software / tags
       ├─ quick_ideas
       ├─ feedback
       └─ embeddings (optional)
 ```
 
-## Search architecture
+## Search architecture Phase 2
 
-Use hybrid retrieval later, not vector-only:
-1. lexical/field-weighted search
-2. structured filters
-3. optional vector similarity
-4. rerank/business rules
+Use **hybrid retrieval**, not vector-only:
+1. exact/lexical match
+2. field weights
+3. structured filters
+4. vector similarity for fuzzy natural-language intent
+5. rerank/business rules
 
-Exact terms such as VISSIM, Civil 3D, TOR and BOQ must remain deterministic.
+## Security / enterprise future
 
-## Security
+If later versions accept company files or confidential prompts:
+- authenticated backend and access controls
+- retention policy
+- no sensitive browser persistence by default
+- separate public atlas content from uploaded user content
+- minimize logging of document content
+- company AI/data-handling policy applies
 
-If the app later accepts company files or confidential prompts:
-- require authenticated backend
-- do not store sensitive content in browser persistence by default
-- define retention policy
-- separate public atlas content from user content
-- minimize logging of document contents
-- follow company AI/data-handling policy
+## Content lifecycle future
 
-## Content lifecycle
-
-Recommended:
 Draft → Technical Review → Published → Superseded
 
-Keep owner, reviewer, updated date, research source, software/version basis and verification date.
+Store owner, reviewer, updated date, research source, software/version basis and verification date.

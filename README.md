@@ -1,42 +1,55 @@
 # AI Use Case Atlas
 
-ค้นหาว่า AI ช่วยงานของคุณได้อย่างไร
+ค้นหาว่า AI ช่วยงานของคุณได้อย่างไร — จากงานจริงที่กำลังทำ ไม่ใช่จากชื่อฟีเจอร์ AI
 
-A task-first AI adoption library for Transportation BU, designed around a master corpus of **450 use cases + 500 quick ideas** covering daily work, Office, engineering, AutoCAD/Civil 3D/Revit, VISSIM, coding/automation, PM, proposal work and management.
+Current corpus: **600 use cases + 800 quick ideas** for Transportation BU workflows, including everyday office work, documents/data, Traffic & Transport, Highway, Railway, Structural/Civil, cost/quantity workflows, CAD/BIM/GIS, simulation, automation, web/apps, PM, proposal and management.
 
-## Product principle
+## Product principles
 
-People should not need to learn AI features first. They should start from the work in front of them:
+1. **Task-first, not tool-first** — เริ่มจาก “วันนี้กำลังทำอะไร?” ก่อนเลือก Chat / Work / Codex
+2. **Fast first success** — ให้ผู้ใช้เจอ use case ที่ลองได้ภายในไม่กี่วินาที
+3. **Human check is visible** — ทุก use case แยก AI assistance ออกจาก engineering/professional responsibility
+4. **Progressive depth** — L1 Ask → L5 Build & Automate
+5. **Static-first architecture** — v1 ไม่ต้องมี paid backend/API และพร้อมย้าย data layer ไป database ภายหลัง
+6. **Traceable technical cases** — workflow ที่ขึ้นกับ software/version มี research tier และ official/primary source URL เมื่อมี
 
-> “วันนี้กำลังทำงานอะไรอยู่?”
+## Tech stack
 
-Then the app helps them discover where ChatGPT, Work, or Codex can help.
-
-## MVP currently in the repo
-
-- React + TypeScript + Vite scaffold
-- Task-first search UI
-- Role, software and level filters
-- Responsive Modern Precision visual system
-- Use-case detail drawer
-- Copyable Prompt Starter
-- Prominent Human / Engineering Check
-- Representative seed dataset for UI/UX development
+- React 19.3
+- TypeScript
+- Vite 8.3
+- Custom CSS design system
+- Static JSON repository/search layer
 - GitHub Pages deployment workflow
 
-The full 450-use-case dataset and 500 Quick Ideas are the next data-import step. The architecture is already designed so importing the full corpus does not require redesigning the UI.
+## Current UX
 
-## Architecture
+- Natural-language search ไทย/อังกฤษ + domain synonyms
+- Filters: category, role, software, ChatGPT surface, AI level
+- **Guided Finder** สำหรับคนที่ยังไม่รู้จะค้นคำว่าอะไร
+- 600 use-case cards
+- Detail drawer: Pain Point, result, input, workflow, Prompt Starter, Human / Engineering Check
+- Official/primary source links for researched software workflows
+- Related use cases
+- Shareable URL using `?uc=<ID>`
+- Searchable **800 Quick Ideas** wall
+- Responsive desktop/mobile layout
 
-- [Product architecture](docs/PRODUCT_ARCHITECTURE.md)
-- [Backend architecture](docs/BACKEND_ARCHITECTURE.md)
-- [UX/UI specification](docs/UX_SPEC.md)
+## New 2026 expansion
 
-## v1 backend strategy
+Added 150 use cases + 300 quick ideas across:
 
-Static-first. The atlas is read-heavy reference content, so v1 intentionally avoids database/API cost. The data layer is isolated so the app can later move to PostgreSQL/Supabase and hybrid semantic search without rebuilding the frontend.
+- office/document/secretary/data QA
+- Traffic survey, parking, curbside, speed, OD, signals and forecast workflows
+- Highway / OpenRoads / Civil 3D
+- Railway / OpenRail
+- Structural result/schedule/quantity QA
+- AutoCAD/AutoLISP, Revit/Dynamo, Navisworks, QGIS/PyQGIS, Bluebeam, MicroStation/OpenRoads
+- VISSIM COM/Python and simulation QA
+- PowerShell, Office Scripts, VBA, Python/Git automation
+- PM, proposal, multi-bid staffing, management dashboards
 
-## Local development
+## Run locally
 
 ```bash
 npm install
@@ -49,12 +62,24 @@ Build:
 npm run build
 ```
 
+## Architecture
+
+- `docs/PRODUCT_ARCHITECTURE.md`
+- `docs/UX_SPEC.md`
+- `docs/BACKEND_ARCHITECTURE.md`
+- `docs/DATA_MODEL.md`
+
 ## Deployment
 
-GitHub Pages workflow:
-
-`.github/workflows/deploy-pages.yml`
-
-The Vite base path is configured for:
+GitHub Pages workflow is included. Vite base path:
 
 `/ai-usecase-atlas/`
+
+## Data
+
+- `src/data/usecases.json` — 600 use cases
+- `src/data/ideas.json` — 800 quick ideas
+- `src/data/roleStarts.json` — recommended starting points by role
+- `src/data/expansionMeta.json` — expansion counts and official source families
+
+The data layer is separated from UI components so a future PostgreSQL/Supabase + hybrid semantic search backend will not require a frontend rewrite.
