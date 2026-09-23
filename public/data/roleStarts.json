@@ -1,0 +1,1058 @@
+[
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "A20",
+    "Use Case": "ทำ glossary คำศัพท์ของโครงการจากเอกสารหลายไฟล์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "B17",
+    "Use Case": "สร้าง appendix จากข้อมูลหลายไฟล์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D28",
+    "Use Case": "สร้าง automated monthly data refresh script",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "A01",
+    "Use Case": "อธิบายแนวคิดหรือศัพท์เทคนิคให้เหมาะกับระดับผู้ฟัง",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "B12",
+    "Use Case": "สร้างสารบัญและโครงหัวข้อจากรายงานฉบับเก่า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D13",
+    "Use Case": "แปลงข้อมูล wide format เป็น long format",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D14",
+    "Use Case": "แยกข้อความใน cell เป็นข้อมูลหลายคอลัมน์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D16",
+    "Use Case": "สร้าง data dictionary จากไฟล์ที่ไม่มีคำอธิบาย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D19",
+    "Use Case": "สร้าง pivot summary ตามมิติที่ผู้ใช้ระบุ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D20",
+    "Use Case": "สร้างกราฟที่เหมาะกับคำถามจากชุดข้อมูล",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D21",
+    "Use Case": "อธิบายกราฟและ anomaly เป็นข้อความรายงาน",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "ทุกคน",
+    "Recommended ID": "D22",
+    "Use Case": "ทำ sensitivity analysis ของสมมติฐานหลัก",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B17",
+    "Use Case": "สร้าง appendix จากข้อมูลหลายไฟล์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C13",
+    "Use Case": "สร้าง minutes จาก transcript หรือโน้ตประชุม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B12",
+    "Use Case": "สร้างสารบัญและโครงหัวข้อจากรายงานฉบับเก่า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C01",
+    "Use Case": "ร่างอีเมลธุรกิจจาก bullet หรือบริบทสั้นๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B02",
+    "Use Case": "ปรับปรุงบทในรายงานให้ชัดเจนและคงโครงสร้างเดิม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C06",
+    "Use Case": "วางแผนนัดหมาย/ลำดับการประสานงานหลายฝ่าย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C16",
+    "Use Case": "สรุปอีเมลหลาย thread ให้เหลือสิ่งที่ต้องตัดสินใจ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C19",
+    "Use Case": "ตรวจรายชื่อผู้รับและเอกสารแนบก่อนส่งหนังสือ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "C23",
+    "Use Case": "สรุปค่าใช้จ่ายจากใบเสร็จเพื่อเตรียมเบิก",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B01",
+    "Use Case": "สร้างร่างรายงาน Word จาก outline และข้อมูลโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work",
+    "Level": 3
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B05",
+    "Use Case": "สร้าง PowerPoint สำหรับประชุมจากรายงานฉบับเต็ม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work",
+    "Level": 3
+  },
+  {
+    "Role": "Secretary / Admin",
+    "Recommended ID": "B06",
+    "Use Case": "เปลี่ยนบันทึกดิบเป็น Executive Brief 1-2 หน้า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work",
+    "Level": 3
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "E15",
+    "Use Case": "ออกแบบแผนสำรวจปริมาณจราจรให้ตรงวัตถุประสงค์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J09",
+    "Use Case": "เตรียม checklist ก่อนสร้าง VISSIM model",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "E17",
+    "Use Case": "ตรวจคุณภาพข้อมูล traffic count ก่อนวิเคราะห์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat / Work",
+    "Level": 2
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J10",
+    "Use Case": "ตรวจ network coding จากรายการ link/connector",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat / Work",
+    "Level": 2
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "E16",
+    "Use Case": "สร้างแบบฟอร์มสำรวจ turning movement count",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J22",
+    "Use Case": "สร้าง calibration dashboard",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work / Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "D28",
+    "Use Case": "สร้าง automated monthly data refresh script",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "E19",
+    "Use Case": "คำนวณ PHF และตัวชี้วัดพื้นฐานอัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J13",
+    "Use Case": "สร้าง batch run หลาย random seed",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J14",
+    "Use Case": "ดึง travel time ทุก measurement point อัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J15",
+    "Use Case": "ดึง queue result แยก approach อัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Traffic Engineer",
+    "Recommended ID": "J16",
+    "Use Case": "ดึง node delay หลายทางแยกอัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I30",
+    "Use Case": "แปลง coordinate / projection พร้อม QA",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I15",
+    "Use Case": "ตรวจ layer naming กับ CAD standard",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I28",
+    "Use Case": "สร้าง clash issue list จาก export data",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "F17",
+    "Use Case": "ตรวจ sight distance calculation workflow",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "D28",
+    "Use Case": "สร้าง automated monthly data refresh script",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I13",
+    "Use Case": "เขียน AutoLISP สำหรับงานเขียนแบบซ้ำๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I14",
+    "Use Case": "สร้าง script batch rename layer ใน AutoCAD",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I19",
+    "Use Case": "สร้าง command script สำหรับ plot หลาย layout",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I25",
+    "Use Case": "สร้าง Dynamo workflow สำหรับงาน Revit ซ้ำๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I29",
+    "Use Case": "ทำ GIS geoprocessing script สำหรับงานซ้ำ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "I34",
+    "Use Case": "สร้าง web map prototype จาก GeoJSON",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Highway Engineer",
+    "Recommended ID": "D13",
+    "Use Case": "แปลงข้อมูล wide format เป็น long format",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "I30",
+    "Use Case": "แปลง coordinate / projection พร้อม QA",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "I15",
+    "Use Case": "ตรวจ layer naming กับ CAD standard",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "I28",
+    "Use Case": "สร้าง clash issue list จาก export data",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D28",
+    "Use Case": "สร้าง automated monthly data refresh script",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "I13",
+    "Use Case": "เขียน AutoLISP สำหรับงานเขียนแบบซ้ำๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D13",
+    "Use Case": "แปลงข้อมูล wide format เป็น long format",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D14",
+    "Use Case": "แยกข้อความใน cell เป็นข้อมูลหลายคอลัมน์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D16",
+    "Use Case": "สร้าง data dictionary จากไฟล์ที่ไม่มีคำอธิบาย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D19",
+    "Use Case": "สร้าง pivot summary ตามมิติที่ผู้ใช้ระบุ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D20",
+    "Use Case": "สร้างกราฟที่เหมาะกับคำถามจากชุดข้อมูล",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D21",
+    "Use Case": "อธิบายกราฟและ anomaly เป็นข้อความรายงาน",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Railway Engineer",
+    "Recommended ID": "D22",
+    "Use Case": "ทำ sensitivity analysis ของสมมติฐานหลัก",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K26",
+    "Use Case": "ตั้ง Git repository และ branch workflow",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "D28",
+    "Use Case": "สร้าง automated monthly data refresh script",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K11",
+    "Use Case": "สร้าง Python script จาก workflow ที่อธิบายเป็นภาษาไทย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "D13",
+    "Use Case": "แปลงข้อมูล wide format เป็น long format",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "H08",
+    "Use Case": "สร้าง calculation note structure จากโจทย์ออกแบบ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K19",
+    "Use Case": "สร้าง CLI utility สำหรับงานวิศวกรรมเล็กๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K21",
+    "Use Case": "สร้าง unit test ให้ calculation function",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K24",
+    "Use Case": "refactor code โดยคงผลลัพธ์เดิม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K25",
+    "Use Case": "สร้าง README และคู่มือใช้งานโปรแกรม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K29",
+    "Use Case": "สร้าง scheduled task สำหรับงาน routine บนเครื่อง",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "K32",
+    "Use Case": "สร้าง local search tool สำหรับเอกสารโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Structural / Civil Engineer",
+    "Recommended ID": "D01",
+    "Use Case": "ทำความสะอาด Excel/CSV ที่ชื่อคอลัมน์และรูปแบบไม่สม่ำเสมอ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "I30",
+    "Use Case": "แปลง coordinate / projection พร้อม QA",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "I15",
+    "Use Case": "ตรวจ layer naming กับ CAD standard",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "I28",
+    "Use Case": "สร้าง clash issue list จาก export data",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K26",
+    "Use Case": "ตั้ง Git repository และ branch workflow",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "I13",
+    "Use Case": "เขียน AutoLISP สำหรับงานเขียนแบบซ้ำๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K11",
+    "Use Case": "สร้าง Python script จาก workflow ที่อธิบายเป็นภาษาไทย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K12",
+    "Use Case": "อธิบายและแก้ bug ใน Python script ที่มีอยู่",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K13",
+    "Use Case": "เขียน VBA ลดขั้นตอนงาน Excel รายเดือน",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K14",
+    "Use Case": "แปลง VBA workflow เดิมเป็น Python",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K15",
+    "Use Case": "สร้าง PowerShell script จัดการไฟล์จำนวนมาก",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K16",
+    "Use Case": "สร้าง batch rename ตามกฎชื่อโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "CAD/BIM/GIS User",
+    "Recommended ID": "K17",
+    "Use Case": "สร้าง folder structure โครงการอัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "M11",
+    "Use Case": "สร้าง WBS จาก scope และ deliverable",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "O12",
+    "Use Case": "จัดประเด็นที่ต้องตัดสินใจตาม urgency/impact",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "M13",
+    "Use Case": "ตรวจ schedule logic และ dependency เบื้องต้น",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "O10",
+    "Use Case": "สรุป project health สำหรับ MD 1 หน้า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "M27",
+    "Use Case": "เตรียม monthly project review pack",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "O11",
+    "Use Case": "สร้าง decision memo จากข้อมูลหลายฝ่าย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "O20",
+    "Use Case": "เตรียม board/management presentation จากข้อมูลทีม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "B17",
+    "Use Case": "สร้าง appendix จากข้อมูลหลายไฟล์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "M24",
+    "Use Case": "ตรวจ over-allocation ของบุคลากรหลายโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "O09",
+    "Use Case": "สร้าง executive dashboard จากข้อมูลหลายโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "B12",
+    "Use Case": "สร้างสารบัญและโครงหัวข้อจากรายงานฉบับเก่า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "PM / Project Control",
+    "Recommended ID": "B13",
+    "Use Case": "รวม comment หลายคนแล้วจัดเป็น issue list",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "N13",
+    "Use Case": "หาเนื้อหาที่ขาดก่อนส่งข้อเสนอ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "O12",
+    "Use Case": "จัดประเด็นที่ต้องตัดสินใจตาม urgency/impact",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "N09",
+    "Use Case": "อ่าน TOR แล้วสร้าง compliance matrix",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat / Work",
+    "Level": 2
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "O10",
+    "Use Case": "สรุป project health สำหรับ MD 1 หน้า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "N20",
+    "Use Case": "สร้าง bid/no-bid decision input pack",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "O11",
+    "Use Case": "สร้าง decision memo จากข้อมูลหลายฝ่าย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "O20",
+    "Use Case": "เตรียม board/management presentation จากข้อมูลทีม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "B17",
+    "Use Case": "สร้าง appendix จากข้อมูลหลายไฟล์",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "O09",
+    "Use Case": "สร้าง executive dashboard จากข้อมูลหลายโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "B12",
+    "Use Case": "สร้างสารบัญและโครงหัวข้อจากรายงานฉบับเก่า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "B13",
+    "Use Case": "รวม comment หลายคนแล้วจัดเป็น issue list",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Proposal Team",
+    "Recommended ID": "B21",
+    "Use Case": "ทำ executive summary จากรายงานหลายบท",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "M11",
+    "Use Case": "สร้าง WBS จาก scope และ deliverable",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "N13",
+    "Use Case": "หาเนื้อหาที่ขาดก่อนส่งข้อเสนอ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O12",
+    "Use Case": "จัดประเด็นที่ต้องตัดสินใจตาม urgency/impact",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "M13",
+    "Use Case": "ตรวจ schedule logic และ dependency เบื้องต้น",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "N09",
+    "Use Case": "อ่าน TOR แล้วสร้าง compliance matrix",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat / Work",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O10",
+    "Use Case": "สรุป project health สำหรับ MD 1 หน้า",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O13",
+    "Use Case": "สรุป workload ของ BU และ capacity risk",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O14",
+    "Use Case": "วิเคราะห์ resource conflict ระหว่างโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O15",
+    "Use Case": "สรุป commercial exposure จาก change / claim log",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "O18",
+    "Use Case": "สรุป root cause ของปัญหาโครงการจากหลักฐาน",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 2
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "M27",
+    "Use Case": "เตรียม monthly project review pack",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "MD / BU Head",
+    "Recommended ID": "N20",
+    "Use Case": "สร้าง bid/no-bid decision input pack",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 3
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K26",
+    "Use Case": "ตั้ง Git repository และ branch workflow",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "Q08",
+    "Use Case": "รับ TOR แล้วสร้าง proposal pack ตั้งแต่ compliance ถึง draft",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Work + Chat + Codex (ตามขั้นตอน)",
+    "Level": 4
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K11",
+    "Use Case": "สร้าง Python script จาก workflow ที่อธิบายเป็นภาษาไทย",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "L09",
+    "Use Case": "สร้าง web calculator สำหรับงานวิศวกรรม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "Q11",
+    "Use Case": "เชื่อม VISSIM batch run กับ Excel dashboard อัตโนมัติ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Codex + Chat/Work",
+    "Level": 5
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K19",
+    "Use Case": "สร้าง CLI utility สำหรับงานวิศวกรรมเล็กๆ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K21",
+    "Use Case": "สร้าง unit test ให้ calculation function",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K24",
+    "Use Case": "refactor code โดยคงผลลัพธ์เดิม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K25",
+    "Use Case": "สร้าง README และคู่มือใช้งานโปรแกรม",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K29",
+    "Use Case": "สร้าง scheduled task สำหรับงาน routine บนเครื่อง",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "K32",
+    "Use Case": "สร้าง local search tool สำหรับเอกสารโครงการ",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  },
+  {
+    "Role": "Power User / Developer",
+    "Recommended ID": "L17",
+    "Use Case": "สร้าง prototype สำหรับ MD review ภายในวันเดียว",
+    "Why start here": "เริ่มจากงานจริงที่พบได้บ่อยและเห็นผลเร็ว",
+    "Surface": "Chat",
+    "Level": 1
+  }
+]

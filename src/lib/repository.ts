@@ -6,22 +6,18 @@ export type AtlasData = {
   roleStarts: Array<Record<string, string | number>>
 }
 
-async function loadGzipJson<T>(relativePath: string): Promise<T> {
+async function loadJson<T>(relativePath: string): Promise<T> {
   const url = new URL(relativePath, document.baseURI)
   const response = await fetch(url)
   if (!response.ok) throw new Error(`Failed to load ${relativePath}: ${response.status}`)
-  if (typeof DecompressionStream === 'undefined') throw new Error('This browser does not support gzip decompression streams.')
-  const stream = response.body?.pipeThrough(new DecompressionStream('gzip'))
-  if (!stream) throw new Error(`No response body for ${relativePath}`)
-  const text = await new Response(stream).text()
-  return JSON.parse(text) as T
+  return (await response.json()) as T
 }
 
 export async function loadAtlasData(): Promise<AtlasData> {
   const [useCases, quickIdeas, roleStarts] = await Promise.all([
-    loadGzipJson<UseCase[]>('data/usecases.json.gz'),
-    loadGzipJson<QuickIdea[]>('data/ideas.json.gz'),
-    loadGzipJson<Array<Record<string, string | number>>>('data/roleStarts.json.gz'),
+    loadJson<UseCase[]>('data/usecases.json'),
+    loadJson<QuickIdea[]>('data/ideas.json'),
+    loadJson<Array<Record<string, string | number>>>('data/roleStarts.json'),
   ])
   return { useCases, quickIdeas, roleStarts }
 }
