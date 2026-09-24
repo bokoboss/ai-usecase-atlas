@@ -88,3 +88,10 @@ The data layer is separated from UI components so a future PostgreSQL/Supabase +
 
 - Phase 1: search mode, relevance, Quick Ideas dedupe, mobile navigation/filtering and toolkit consolidation.
 - Phase 2: readability scale, reviewed near-duplicate result grouping, Similar Variants and next-step Related Cases.
+
+
+## Phase 3
+
+- Discover hierarchy simplified to Role Start → Quick Wins → Library.
+- Initial library is capped to 24 recommended items until the user searches, filters, or explicitly expands it.
+- Search now has a 40-query regression suite via `npm run check:search`.

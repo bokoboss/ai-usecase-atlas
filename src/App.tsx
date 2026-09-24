@@ -291,6 +291,7 @@ function App() {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [toolkitView, setToolkitView] = useState<'all' | 'saved' | 'tried' | 'recent'>('all')
   const [copiedIdeaId, setCopiedIdeaId] = useState('')
+  const [browseAll, setBrowseAll] = useState(false)
   const [ideaQuery, setIdeaQuery] = useState('')
   const [ideaMoment, setIdeaMoment] = useState('')
   const [ideaTime, setIdeaTime] = useState('')
@@ -363,6 +364,7 @@ function App() {
   const hasActiveFilters = Object.values(filters).some(Boolean)
   const searchMode = Boolean(query.trim() || hasActiveFilters)
   const activeFilterCount = Object.values(filters).filter(Boolean).length
+  const resultLimit = searchMode || browseAll ? 160 : 24
   const toolkitItems = useMemo(() => {
     const ids = toolkitView === 'saved' ? savedIds : toolkitView === 'tried' ? triedIds : toolkitView === 'recent' ? recentIds : [...new Set([...recentIds, ...savedIds, ...triedIds])]
     return ids.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item))
@@ -383,7 +385,7 @@ function App() {
     window.setTimeout(() => setCopiedIdeaId((current) => current === idea.id ? '' : current), 1600)
   }
 
-  const quickSearch = (value: string) => { setActiveTab('discover'); setQuery(value); setFilters(emptyFilters); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const quickSearch = (value: string) => { setActiveTab('discover'); setQuery(value); setFilters(emptyFilters); setBrowseAll(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const applyFinder = (task: string, role: string, software: string, level: string) => {
     setActiveTab('discover')
     setQuery(task)
@@ -398,7 +400,7 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => { setActiveTab('discover'); setQuery(''); setFilters(emptyFilters) }}>
+        <button className="brand" onClick={() => { setActiveTab('discover'); setQuery(''); setFilters(emptyFilters); setBrowseAll(false) }}>
           <span className="brand-mark">AI</span><span><strong>Use Case Atlas</strong><small>ChatGPT for TR</small></span>
         </button>
         <nav className="desktop-nav">
@@ -419,25 +421,19 @@ function App() {
           <div className="eyebrow">{useCases.length} USE CASES · TR BU AI ADOPTION LIBRARY</div>
           <h1>วันนี้คุณกำลังทำงานอะไรอยู่?</h1>
           <p className="hero-copy">บอกงานที่กำลังทำ ปัญหาที่เจอ หรือโปรแกรมที่ใช้ แล้วค้นดูว่า ChatGPT, Work หรือ Codex ช่วยตรงไหนได้บ้าง</p>
-          <div className="search-box"><SearchIcon /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="เช่น ตรวจรายงานจราจร, ทำ Excel, OpenRoads, VISSIM, เตรียมประชุมให้ MD..." autoFocus /><span>{results.length}</span></div>
+          <div className="search-box"><SearchIcon /><input value={query} onChange={(event) => { setQuery(event.target.value); setBrowseAll(false) }} placeholder="เช่น ตรวจรายงานจราจร, ทำ Excel, OpenRoads, VISSIM, เตรียมประชุมให้ MD..." autoFocus />{searchMode && <button className="search-clear" onClick={() => { setQuery(''); setFilters(emptyFilters); setBrowseAll(false) }}>ล้าง</button>}<span>{results.length}</span></div>
           <div className="quick-chips">
             {['งาน Office', 'Traffic', 'Highway / OpenRoads', 'Railway / OpenRail', 'Structure', 'Cost / BOQ', 'CAD / BIM / GIS', 'VISSIM', 'ทำเว็บ / โปรแกรม'].map((value) => <button key={value} onClick={() => quickSearch(value)}>{value}</button>)}
           </div>
           <button className="guided-button" onClick={() => setFinderOpen(true)}>ไม่รู้จะค้นอะไร? ใช้ Guided Finder →</button>
         </main>
 
-        <section className={searchMode ? "start-here content-width search-hidden" : "start-here content-width"}><div className="section-heading"><div><small>START HERE BY ROLE</small><h2>เลือกบทบาท แล้วเริ่มจากของที่ง่ายก่อน</h2><p>ไม่ต้องอ่าน 600 รายการ ระบบจะคัดจุดเริ่มที่เหมาะกับงานของคุณให้ก่อน</p></div></div><div className="role-chips">{roleNames.map((role) => <button key={role} className={startRole === role ? 'active' : ''} onClick={() => setStartRole(role)}>{role}</button>)}</div><div className="mini-case-grid">{roleStartItems.map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} />)}</div></section>
+        <section className={searchMode ? "start-here content-width search-hidden" : "start-here content-width"}><div className="section-heading"><div><small>01 · START HERE BY ROLE</small><h2>เริ่มจากงานที่ใกล้ตัวคุณที่สุด</h2><p>เลือกบทบาทก่อน Atlas จะจัด 4 จุดเริ่มที่เหมาะกับงานจริงของคุณ โดยไล่จากงานที่ลองได้ง่ายไปสู่งานที่ต่อยอดได้</p></div></div><div className="role-chips">{roleNames.map((role) => <button key={role} className={startRole === role ? 'active' : ''} onClick={() => setStartRole(role)}>{role}</button>)}</div><div className="mini-case-grid">{roleStartItems.map((item, index) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label={`STEP ${index + 1}`} />)}</div></section>
 
-        <section className={searchMode ? "quick-win-section content-width search-hidden" : "quick-win-section content-width"}><div className="section-heading"><div><small>5-MINUTE QUICK WINS</small><h2>มีเวลาไม่กี่นาที ลองกับงานที่อยู่ตรงหน้า</h2><p>เริ่มจากงานเล็กที่เห็นผลเร็ว แล้วค่อยขยับไป workflow ที่ซับซ้อนขึ้น</p></div></div><div className="quick-win-grid">{quickWins.slice(0, 8).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="ลองวันนี้" />)}</div></section>
-
-        <section className={searchMode ? "entry-grid content-width search-hidden" : "entry-grid content-width"}>
-          <button className="entry-card role-card" onClick={() => document.getElementById('library')?.scrollIntoView({ behavior: 'smooth' })}><span>01</span><div><small>เริ่มจากงาน</small><h2>ค้นจากสิ่งที่กำลังทำ</h2><p>พิมพ์ภาษาธรรมชาติ ไม่ต้องรู้ชื่อฟีเจอร์ AI ก่อน</p></div></button>
-          <button className="entry-card" onClick={() => setFinderOpen(true)}><span>02</span><div><small>Guided Finder</small><h2>ให้ระบบช่วยเจาะ use case</h2><p>เลือกบทบาท โปรแกรม และระดับที่อยากลอง</p></div></button>
-          <button className="entry-card" onClick={() => { setFilters({ ...emptyFilters, software: 'Excel' }); document.getElementById('library')?.scrollIntoView({ behavior: 'smooth' }) }}><span>03</span><div><small>เริ่มจากเครื่องมือ</small><h2>Excel, CAD, BIM, VISSIM...</h2><p>ดูว่า AI ทำงานร่วมกับโปรแกรมเดิมได้อย่างไร</p></div></button>
-        </section>
+        <section className={searchMode ? "quick-win-section content-width search-hidden" : "quick-win-section content-width"}><div className="section-heading"><div><small>02 · 5-MINUTE QUICK WINS</small><h2>อยากลองทันที เลือกงานเล็กก่อน</h2><p>4 งานที่ใช้เวลาเริ่มต้นน้อย เหมาะสำหรับเห็นประโยชน์จาก AI ก่อนขยับไป workflow ที่ซับซ้อน</p></div><button className="section-action" onClick={() => setActiveTab('ideas')}>ดู Quick Ideas →</button></div><div className="quick-win-grid">{quickWins.slice(0, 4).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="5 นาที" />)}</div></section>
 
         <section className={searchMode ? "coverage-strip content-width search-hidden" : "coverage-strip content-width"}>
-          <div><strong>{useCases.length}</strong><span>Use cases</span></div><div><strong>{quickIdeas.length}</strong><span>Quick ideas</span></div><div><strong>{categories.length}</strong><span>Work categories</span></div><div><strong>{useCases.filter((u) => u.isNew).length}</strong><span>New researched additions</span></div>
+          <div><strong>{useCases.length}</strong><span>Use cases</span></div><div><strong>{quickIdeas.length}</strong><span>Quick ideas</span></div><div><strong>{categories.length}</strong><span>Work categories</span></div><div><button onClick={() => setFinderOpen(true)}>Guided Finder →</button><span>ถ้ายังไม่รู้จะค้นอะไร</span></div>
         </section>
 
         <section id="library" className="library content-width">
@@ -453,10 +449,11 @@ function App() {
 
           <div className="results-panel">
             <button className="mobile-filter-button" onClick={() => setMobileFiltersOpen(true)}>ตัวกรอง{activeFilterCount ? ` · ${activeFilterCount}` : ''}</button>
-            <div className="results-head"><div><small>USE CASE LIBRARY</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : 'Use cases ที่แนะนำ'}</h2></div><strong>{results.length} รายการ</strong></div>
-            <p className="results-subnote">รายการที่ซ้ำเชิงงานมากจะถูกรวมไว้เป็นผลลัพธ์เดียว และดู variant ได้จากหน้ารายละเอียด</p>
-            <div className="usecase-grid">{results.slice(0, 160).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} key={item.id} />)}</div>
-            {results.length > 160 && <div className="result-note">กำลังแสดง 160 รายการแรก — ใช้ Search หรือ Filter เพื่อเจาะให้แคบลง</div>}
+            <div className="results-head"><div><small>{searchMode ? 'SEARCH RESULTS' : '03 · EXPLORE THE LIBRARY'}</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : browseAll ? 'คลัง Use Case' : 'สำรวจเพิ่มเติมจากคลัง'}</h2></div><strong>{results.length} รายการ</strong></div>
+            <p className="results-subnote">{searchMode ? 'ผลลัพธ์เรียงตามความตรงกับคำค้น และรวมรายการที่ซ้ำเชิงงานมากไว้เป็น variant ในหน้ารายละเอียด' : browseAll ? 'กำลังแสดงคลังแบบกว้างขึ้น ใช้ Search หรือ Filter เมื่อต้องการเจาะงานเฉพาะ' : 'เริ่มจาก 24 รายการแนะนำก่อน เพื่อไม่ให้หน้าแรกกลายเป็นรายการยาวเกินไป'}</p>
+            <div className="usecase-grid">{results.slice(0, resultLimit).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} key={item.id} />)}</div>
+            {!searchMode && !browseAll && results.length > resultLimit && <div className="browse-more"><div><strong>ต้องการสำรวจทั้งคลัง?</strong><span>เปิดรายการเพิ่ม หรือใช้ Search / Filter เพื่อเจาะงานที่ต้องการ</span></div><button onClick={() => setBrowseAll(true)}>ดู use case เพิ่ม →</button></div>}
+            {(searchMode || browseAll) && results.length > resultLimit && <div className="result-note">กำลังแสดง {resultLimit} รายการแรก — ใช้ Search หรือ Filter เพื่อเจาะให้แคบลง</div>}
             {!results.length && <div className="empty-state"><h3>ยังไม่พบ use case ที่ตรง</h3><p>ลองใช้คำสั้นลง เช่น “Excel”, “รายงาน”, “ประชุม”, “OpenRoads”, “Revit”, “VISSIM” หรือกดล้าง filter</p></div>}
           </div>
         </section>
