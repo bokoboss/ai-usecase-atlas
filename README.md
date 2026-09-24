@@ -100,3 +100,11 @@ The data layer is separated from UI components so a future PostgreSQL/Supabase +
 ## Quick Ideas detail behavior
 
 All Quick Idea cards now open a detail panel first. Linked ideas expose their full Use Case as a secondary action. The 50 standalone Idea Only records use contextual input/output/guardrail guides and generated prompts instead of the old generic “นำตัวอย่างงานจริงมาให้ ChatGPT...” starter.
+
+
+## Phase 4
+
+- Search/filter/tab/detail state is shareable through the URL and supports browser Back/Forward.
+- Use Case cards have direct Saved/Tried controls; Detail headers expose faster Copy Prompt actions.
+- Mobile/touch behavior includes safe-area navigation, body-scroll locking, larger touch targets and full-width detail panels.
+- `npm run check:product` validates Quick Idea integrity and URL state round-tripping.

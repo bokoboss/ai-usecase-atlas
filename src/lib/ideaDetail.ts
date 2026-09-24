@@ -9,7 +9,7 @@ export type IdeaGuide = {
 
 type StandaloneGuide = [inputHint: string, outputHint: string, guardrail: string]
 
-const standaloneGuides: Record<string, StandaloneGuide> = {
+export const standaloneGuides: Record<string, StandaloneGuide> = {
   'QI-451': ['ภาพ whiteboard ที่เห็นข้อความชัดที่สุด พร้อมวันประชุม/บริบทถ้ามี', 'Action List ตาราง: Action | Owner | Due date | Decision/Issue | หมายเหตุ', 'ข้อความ ชื่อ หรือวันที่ที่อ่านไม่ชัดต้องระบุว่า “อ่านไม่ชัด/ต้องยืนยัน” ห้ามเดา'],
   'QI-452': ['รูปตารางจากหน้างาน โดยถ่ายตรงและให้เห็นหัวตาราง/หน่วยครบ', 'ตารางแถว-คอลัมน์พร้อมวาง Excel และรายการ cell ที่อ่านไม่ชัด', 'รักษาหน่วย จุดทศนิยม และลำดับแถวเดิม ถ้าอ่านไม่ได้ให้ทำเครื่องหมายแทนการเดา'],
   'QI-453': ['เนื้อหาอีเมลหรือ bullet หลัก พร้อมผู้รับและระดับความเป็นทางการ', 'หัวข้ออีเมล 5 ตัวเลือก เรียงจากตรงประเด็นที่สุด พร้อมระบุโทน', 'อย่าใส่ deadline/เลขอ้างอิง/คำเร่งด่วนที่ไม่มีในเนื้อหา'],
