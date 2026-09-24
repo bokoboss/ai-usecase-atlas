@@ -11,6 +11,29 @@ const levelLabels: Record<number, string> = { 1: 'Ask', 2: 'Assist', 3: 'Produce
 const quickWinIds = ['A05', 'C01', 'A06', 'A07', 'A08', 'B08', 'B27', 'D03', 'C20', 'D21']
 const genericHookPattern = /(เอางานที่กำลังทำอยู่ให้ AI ช่วยบางขั้น|ลองทำเป็น workflow เล็กๆ|เริ่มจากงานจริงที่พบได้บ่อย)/i
 
+type ThemeMode = 'dark' | 'light'
+
+function getInitialTheme(): ThemeMode {
+  if (typeof document !== 'undefined') {
+    const active = document.documentElement.dataset.theme
+    if (active === 'light' || active === 'dark') return active
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem('ai-atlas:theme')
+      if (stored === 'light' || stored === 'dark') return stored
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+    } catch { /* fall through to dark */ }
+  }
+  return 'dark'
+}
+
+function ThemeToggle({ theme, onToggle }: { theme: ThemeMode, onToggle: () => void }) {
+  const nextLabel = theme === 'dark' ? 'Light' : 'Dark'
+  const ariaLabel = theme === 'dark' ? 'เปลี่ยนเป็น Light mode' : 'เปลี่ยนเป็น Dark mode'
+  return <button className="theme-toggle" onClick={onToggle} aria-label={ariaLabel} title={ariaLabel}><span aria-hidden="true">{theme === 'dark' ? '☀' : '☾'}</span><b>{nextLabel}</b></button>
+}
+
 function displayOutcome(item: UseCase) {
   if (item.adoptionHook && !genericHookPattern.test(item.adoptionHook)) return item.adoptionHook
   return item.desiredResult || item.painPoint
@@ -370,6 +393,14 @@ function App() {
   const [triedIds, setTriedIds] = useStoredIds('ai-atlas:tried')
   const [recentIds, setRecentIds] = useStoredIds('ai-atlas:recent')
   const [viewLinkCopied, setViewLinkCopied] = useState(false)
+  const [theme, setTheme] = useState<ThemeMode>(getInitialTheme)
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.documentElement.style.colorScheme = theme
+    try { window.localStorage.setItem('ai-atlas:theme', theme) } catch { /* localStorage may be unavailable */ }
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f7fb' : '#07111f')
+  }, [theme])
 
   useEffect(() => {
     loadAtlasData()
@@ -566,12 +597,15 @@ function App() {
         <button className="brand" onClick={resetHome}>
           <span className="brand-mark">AI</span><span><strong>Use Case Atlas</strong><small>ChatGPT for TR</small></span>
         </button>
-        <nav className="desktop-nav">
-          <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => changeTab('discover')}>ค้นหา Use Case</button>
-          <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => changeTab('ideas')}>{quickIdeas.length} Quick Ideas</button>
-          <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => changeTab('toolkit')}>My Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
-          <a href="https://github.com/bokoboss/ai-usecase-atlas" target="_blank" rel="noreferrer">GitHub</a>
-        </nav>
+        <div className="topbar-actions">
+          <nav className="desktop-nav">
+            <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => changeTab('discover')}>ค้นหา Use Case</button>
+            <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => changeTab('ideas')}>{quickIdeas.length} Quick Ideas</button>
+            <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => changeTab('toolkit')}>My Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
+            <a href="https://github.com/bokoboss/ai-usecase-atlas" target="_blank" rel="noreferrer">GitHub</a>
+          </nav>
+          <ThemeToggle theme={theme} onToggle={() => setTheme((current) => current === 'dark' ? 'light' : 'dark')} />
+        </div>
       </header>
       <nav className="mobile-nav" aria-label="Primary">
         <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => changeTab('discover')}>ค้นหา</button>

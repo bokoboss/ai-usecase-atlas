@@ -6,6 +6,19 @@
     <meta name="theme-color" content="#07111f" />
     <meta name="description" content="AI Use Case Atlas — ค้นหาว่า AI ช่วยงานของคุณได้อย่างไร" />
     <title>AI Use Case Atlas</title>
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem('ai-atlas:theme')
+          const theme = saved === 'light' || saved === 'dark'
+            ? saved
+            : (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+          document.documentElement.dataset.theme = theme
+          document.documentElement.style.colorScheme = theme
+          document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'light' ? '#f4f7fb' : '#07111f')
+        } catch {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
