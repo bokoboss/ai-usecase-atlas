@@ -1,4 +1,5 @@
 import type { QuickIdea, UseCase } from '../types'
+import { areNearDuplicates } from './content'
 
 export type AtlasData = {
   useCases: UseCase[]
@@ -40,25 +41,55 @@ export function getRoleNames(roleStarts: Array<Record<string, string | number>>)
   return [...new Set(roleStarts.map((row) => String(row.Role ?? '')).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'th'))
 }
 
-export function getRelatedUseCases(items: UseCase[], item: UseCase, limit = 6) {
-  const tokens = new Set(
-    (item.categoryTh + ';' + item.discipline + ';' + item.software + ';' + item.tags)
-      .toLocaleLowerCase('th-TH')
-      .split(/[;,/]|\s\+\s/)
-      .map((v) => v.trim())
-      .filter((v) => v.length > 2),
+function splitFacet(raw: string) {
+  return new Set(raw.toLocaleLowerCase('th-TH').split(/[;,/+]|\s+\+\s+/).map((value) => value.trim()).filter((value) => value.length > 2 && value !== '-'))
+}
+
+function sharedCount(a: Set<string>, b: Set<string>) {
+  let count = 0
+  for (const value of a) if (b.has(value)) count += 1
+  return count
+}
+
+function looseTokens(raw: string) {
+  return new Set(
+    raw.toLocaleLowerCase('th-TH')
+      .split(/[\s,;:/()\[\]_-]+/)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 2),
   )
+}
+
+export function getRelatedUseCases(items: UseCase[], item: UseCase, limit = 6) {
+  const itemSoftware = splitFacet(item.software)
+  const itemTags = splitFacet(item.tags)
+  const itemTokens = looseTokens(item.title + ' ' + item.tags + ' ' + item.software + ' ' + item.momentOfNeed)
+
   return items
-    .filter((candidate) => candidate.id !== item.id)
+    .filter((candidate) => candidate.id !== item.id && !areNearDuplicates(candidate.id, item.id))
     .map((candidate) => {
-      const hay = (candidate.categoryTh + ';' + candidate.discipline + ';' + candidate.software + ';' + candidate.tags).toLocaleLowerCase('th-TH')
-      let score = candidate.categoryCode === item.categoryCode ? 4 : 0
-      if (candidate.level === item.level) score += 1
-      for (const token of tokens) if (hay.includes(token)) score += 1
-      return { candidate, score }
+      let score = 0
+      const delta = candidate.level - item.level
+
+      if (candidate.categoryCode === item.categoryCode) score += 5
+      if (candidate.discipline && item.discipline && candidate.discipline === item.discipline) score += 3
+      if (candidate.primaryUsers && item.primaryUsers && candidate.primaryUsers === item.primaryUsers) score += 2
+      if (candidate.momentOfNeed && item.momentOfNeed && candidate.momentOfNeed === item.momentOfNeed) score += 2
+
+      score += Math.min(sharedCount(itemSoftware, splitFacet(candidate.software)) * 3, 6)
+      score += Math.min(sharedCount(itemTags, splitFacet(candidate.tags)), 5)
+      score += Math.min(sharedCount(itemTokens, looseTokens(candidate.title + ' ' + candidate.tags + ' ' + candidate.software + ' ' + candidate.momentOfNeed)) * 0.6, 4)
+
+      if (delta === 1) score += 6
+      else if (delta > 1) score += 4
+      else if (delta === 0) score += 1.5
+      else if (item.level >= 4 && delta === -1) score += 0.5
+
+      if (candidate.surface === item.surface) score += 0.75
+      return { candidate, score, delta }
     })
-    .filter(({ score }) => score > 2)
-    .sort((a, b) => b.score - a.score || a.candidate.id.localeCompare(b.candidate.id))
+    .filter(({ score }) => score >= 6)
+    .sort((a, b) => b.score - a.score || Math.abs(a.delta - 1) - Math.abs(b.delta - 1) || a.candidate.id.localeCompare(b.candidate.id))
     .slice(0, limit)
     .map(({ candidate }) => candidate)
 }

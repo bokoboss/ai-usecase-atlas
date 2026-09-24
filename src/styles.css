@@ -255,3 +255,110 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
   .detail-actions .share-button { padding:8px 9px; }
   .hero-wrap.search-active { padding-top:20px; }
 }
+
+
+/* Phase 2 readability + consolidation */
+body { font-size:16px; line-height:1.55; }
+.library { grid-template-columns:290px minmax(0,1fr); }
+.brand strong { font-size:16px; }
+.brand small { font-size:12px; }
+.topbar nav button, .topbar nav a { font-size:14px; }
+.eyebrow { font-size:12px; }
+.search-box input { font-size:17px; }
+.search-box > span { font-size:13px; }
+.quick-chips button { font-size:13px; padding:8px 12px; }
+.guided-button { font-size:13px; }
+.entry-card small, .filters-title small, .results-head small, .detail-section small { font-size:11px; }
+.entry-card h2 { font-size:19px; }
+.entry-card p { font-size:14px; }
+.filter-field > span { font-size:12px; }
+.filter-field select { font-size:13px; padding:11px 12px; }
+.filters-title button { font-size:12px; }
+.level-guide small { font-size:11px; }
+.level-guide p { font-size:12px; }
+.filters-title h2, .results-head h2 { font-size:21px; }
+.results-head strong { font-size:13px; }
+.results-subnote { margin:-4px 0 16px; color:#7f94ab; font-size:12px; line-height:1.65; }
+.id-chip, .level-badge, .surface-badge { font-size:11px; }
+.new-badge { font-size:10px; }
+.usecase-card { padding:21px; min-height:245px; }
+.usecase-card h3 { font-size:19px; line-height:1.5; }
+.card-outcome { min-height:66px; }
+.card-outcome small { font-size:11px; }
+.card-outcome p { font-size:14px; line-height:1.75; }
+.card-meta span { font-size:11px; line-height:1.4; }
+.software-line { font-size:12px; }
+.card-state span { font-size:11px; }
+.section-heading small { font-size:11px; }
+.section-heading h2 { font-size:27px; }
+.section-heading p { font-size:14px; }
+.section-heading > strong { font-size:13px; }
+.role-chips button, .idea-filter-chips button { font-size:12px; padding:8px 11px; }
+.mini-case > div > span:first-child { font-size:11px; }
+.mini-case h3 { font-size:16px; line-height:1.55; }
+.mini-case p { font-size:13px; line-height:1.7; }
+.coverage-strip span { font-size:11px; }
+.share-button { font-size:12px; }
+.detail-intro small { font-size:11px; }
+.detail-intro p { font-size:15px; }
+.detail-section h3 { font-size:13px; }
+.detail-section p { font-size:14px; }
+.prompt-label { font-size:11px; }
+.prompt-head h3 { font-size:17px; }
+.prompt-head button { font-size:12px; }
+.prompt-box pre { font-size:14px; line-height:1.8; }
+.guardrail-box h3 { font-size:14px; }
+.guardrail-box p { font-size:14px; }
+.workflow-box span, .source-box small, .related-section small, .variant-section small { font-size:11px; }
+.workflow-box li { font-size:14px; }
+.source-box a { font-size:12px; }
+.tag-list span { font-size:11px; }
+.technical-notes summary { font-size:12px; }
+.finder-head small { font-size:11px; }
+.finder-head p { font-size:13px; }
+.finder-panel label { font-size:12px; }
+.finder-panel input, .finder-panel select { font-size:14px; }
+.finder-submit { font-size:14px; }
+.idea-search input { font-size:15px; }
+.idea-search span { font-size:12px; }
+.idea-filter-block > small { font-size:11px; }
+.idea-filter-chips button { font-size:11px; }
+.ideas-grid { columns:3 290px; }
+.idea-card > span { font-size:11px; }
+.idea-card h3 { font-size:16px; line-height:1.6; }
+.idea-card p { font-size:12px; }
+.idea-card small { font-size:11px; padding:5px 7px; }
+.toolkit-hero p { font-size:14px; }
+.toolkit-filter-chips button { font-size:12px; }
+.toolkit-storage-note { font-size:11px !important; }
+.related-section>div:first-child h3, .variant-section h3 { font-size:18px; }
+.related-grid button span, .variant-grid button span { font-size:11px; }
+.related-grid button b, .variant-grid button b { font-size:13px; line-height:1.55; }
+.site-footer { font-size:12px; }
+.site-footer strong { font-size:14px; }
+.loading-screen p { font-size:14px; }
+.result-note, .empty-state { font-size:13px; }
+
+.variant-section { margin:0 30px 24px; padding:17px; border:1px solid rgba(242,205,128,.16); background:rgba(242,205,128,.025); border-radius:14px; }
+.variant-section small { color:var(--warm); letter-spacing:.12em; font-weight:800; }
+.variant-section h3 { margin:4px 0 4px; }
+.variant-section p { margin:0 0 12px; color:#8fa2b8; font-size:13px; line-height:1.65; }
+.variant-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.variant-grid button { text-align:left; border:1px solid var(--line); background:rgba(255,255,255,.018); color:#cbd8e6; border-radius:11px; padding:12px; cursor:pointer; }
+.variant-grid button span { display:block; color:var(--warm); margin-bottom:5px; }
+
+@media(max-width:900px){
+  .library { grid-template-columns:1fr; }
+  .ideas-grid { columns:2 280px; }
+}
+@media(max-width:600px){
+  .hero-wrap h1 { font-size:42px; }
+  .search-box input { font-size:16px; }
+  .section-heading h2 { font-size:23px; }
+  .detail-sticky h2 { font-size:24px; }
+  .mobile-nav button { font-size:12px; padding:11px 6px; }
+  .mobile-filter-button { font-size:13px; }
+  .ideas-grid { columns:1; }
+  .variant-section { margin-left:18px; margin-right:18px; }
+  .variant-grid { grid-template-columns:1fr; }
+}

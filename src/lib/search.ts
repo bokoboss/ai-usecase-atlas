@@ -1,4 +1,5 @@
 import type { Filters, UseCase } from '../types'
+import { collapseNearDuplicateUseCases } from './content'
 
 const normalize = (value: unknown) => String(value ?? '').toLocaleLowerCase('th-TH').trim()
 
@@ -112,14 +113,14 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
   })
 
   if (!terms.length) {
-    return [...filtered].sort((a, b) => {
+    return collapseNearDuplicateUseCases([...filtered].sort((a, b) => {
       const priority = { High: 3, P1: 3, Medium: 2, P2: 2, Low: 1, P3: 1 } as Record<string, number>
       const beginner = (item: UseCase) => item.level <= 2 ? 3 : item.level === 3 ? 2 : item.level === 4 ? 1 : 0
       return beginner(b) - beginner(a) || (priority[b.priority] ?? 0) - (priority[a.priority] ?? 0) || Number(Boolean(b.isNew)) - Number(Boolean(a.isNew)) || a.id.localeCompare(b.id)
-    })
+    }))
   }
 
-  return filtered
+  const ranked = filtered
     .map((item) => {
       const itemFields = fields.map(([key, weight]) => [normalize(item[key]), weight] as const)
       const hay = normalize(fields.map(([key]) => item[key]).join(' '))
@@ -176,6 +177,8 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
     .filter(({ score }) => score > 1)
     .sort((a, b) => b.score - a.score || b.coverage - a.coverage || a.item.id.localeCompare(b.item.id))
     .map(({ item }) => item)
+
+  return collapseNearDuplicateUseCases(ranked)
 }
 
 export function uniqueValues(items: UseCase[], key: keyof UseCase) {
