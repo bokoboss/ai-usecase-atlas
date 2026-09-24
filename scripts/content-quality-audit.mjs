@@ -43,6 +43,9 @@ for (const item of items) {
   if (/งาน “.+” ต้องเชื่อมข้อมูล\/เกณฑ์หลายจุดและตรวจย้อนกลับได้/i.test(String(item.painPoint ?? ''))) {
     failures.push(item.id + ': legacy title-substitution pain point remains')
   }
+  if (allTextFields.some((field) => String(item[field] ?? '').includes('เฉพาะงานนี้:'))) {
+    failures.push(item.id + ': generated template marker "เฉพาะงานนี้:" remains')
+  }
 
   const sw = norm(item.software)
   if (['I','J','K','L'].includes(item.categoryCode) && !(item.sources?.length)) failures.push(item.id + ': software/coding use case missing vendor/primary source')
