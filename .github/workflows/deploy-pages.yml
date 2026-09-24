@@ -27,6 +27,7 @@ jobs:
       - run: npm install
       - run: npm run check:search
       - run: npm run check:product
+      - run: npm run check:content
       - run: npm run build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5

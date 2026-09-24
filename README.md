@@ -108,3 +108,8 @@ All Quick Idea cards now open a detail panel first. Linked ideas expose their fu
 - Use Case cards have direct Saved/Tried controls; Detail headers expose faster Copy Prompt actions.
 - Mobile/touch behavior includes safe-area navigation, body-scroll locking, larger touch targets and full-width detail panels.
 - `npm run check:product` validates Quick Idea integrity and URL state round-tripping.
+
+
+## Phase 5 content quality
+
+The 600-use-case corpus is now guarded by `npm run check:content`. The gate verifies full-corpus field substance, workflow depth, prompt/detail synchronization, duplicate-family limits, software source requirements, and known near-duplicate task pairs. See `docs/CONTENT_QUALITY_PHASE5_FINAL.md`.
