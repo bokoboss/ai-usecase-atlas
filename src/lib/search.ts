@@ -9,7 +9,7 @@ const fields: Array<[keyof UseCase, number]> = [
   ['integrationPattern', 2], ['categoryTh', 2], ['category', 1],
 ]
 
-const stopWords = new Set(['ทำ', 'ช่วย', 'ให้', 'เอา', 'การ', 'งาน', 'อยู่', 'กับ', 'จาก', 'ของ', 'ที่', 'และ', 'หรือ', 'ถึง', 'เป็น', 'ใน', 'เขียน', 'ร่าง', 'บริษัท'])
+const stopWords = new Set(['ทำ', 'ช่วย', 'ให้', 'เอา', 'การ', 'งาน', 'อยู่', 'กับ', 'จาก', 'ของ', 'ที่', 'และ', 'หรือ', 'ถึง', 'เป็น', 'ใน', 'เขียน', 'ร่าง', 'บริษัท', 'คำนวณ'])
 
 const synonymGroups = [
   ['ถนน','ทางหลวง','highway','road','roadway','openroads'],
@@ -36,6 +36,10 @@ const synonymGroups = [
   ['ความปลอดภัย','safety','road safety','rsa','audit'],
   ['ที่จอดรถ','parking','curbside','loading','drop-off','pick-up'],
   ['mm','man-month','man month','manpower','resource loading','บุคลากร','กำลังคน'],
+  ['tia','traffic impact assessment','traffic impact','ผลกระทบการจราจร'],
+  ['earthwork','งานดิน','cut fill','cut/fill'],
+  ['risk register','ทะเบียนความเสี่ยง','risk','mitigation'],
+  ['alignment','แนวเส้นทาง','horizontal alignment','vertical alignment'],
 ]
 
 const roleAliasGroups: Record<string, string[]> = {
@@ -58,6 +62,11 @@ const phraseAliases: Array<[string, string[]]> = [
   ['vissim offset', ['signal offset','offset']],
   ['signal offset', ['offset','สัญญาณไฟ']],
   ['man month', ['mm','man-month','resource loading']],
+  ['จดหมายถึง', ['หนังสือถึง','หน่วยงานภายนอก','หนังสือภายนอก']],
+  ['tia', ['traffic impact assessment','ผลกระทบการจราจร']],
+  ['openrail alignment', ['railway','alignment','track']],
+  ['risk register', ['risk register','risk','mitigation']],
+  ['earthwork', ['earthwork','quantity','cut','fill']],
 ]
 
 const thaiSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl ? new Intl.Segmenter('th', { granularity: 'word' }) : null
@@ -126,6 +135,7 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
       const hay = normalize(fields.map(([key]) => item[key]).join(' '))
       let score = 0
       let covered = 0
+      let aliasHit = false
 
       for (const term of terms) {
         let semanticHit = false
@@ -148,7 +158,9 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
       }
 
       for (const alias of extraAliases) {
-        for (const [text, weight] of itemFields) if (text && hasTerm(text, alias)) score += weight * 0.45
+        for (const [text, weight] of itemFields) {
+          if (text && hasTerm(text, alias)) { score += weight * 0.45; aliasHit = true }
+        }
       }
 
       const coverage = terms.length ? covered / terms.length : 1
@@ -159,8 +171,24 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
       if (phrase && title.includes(phrase)) score += 48
       if (phrase && software.includes(phrase)) score += 18
       if (phrase && category.includes(phrase)) score += 10
-      if (phrase.includes('จดหมาย') && /หนังสือ|จดหมาย/.test(title)) score += 34
+
+      const titleTermHits = terms.filter((term) => hasTerm(title, term)).length
+      score += titleTermHits * 8
+      for (let index = 0; index < terms.length - 1; index += 1) {
+        const bigram = terms[index] + ' ' + terms[index + 1]
+        if (title.includes(bigram)) score += 22
+      }
+
+      if (phrase.includes('จดหมาย') && /หนังสือ|จดหมาย/.test(title)) score += 20
+      if (phrase.includes('จดหมาย') && /(ถึง|ภายนอก|หน่วยงาน)/.test(phrase) && /หนังสือ.*(ภายนอก|หน่วยงาน)|หนังสือถึง/.test(title)) score += 42
       if (phrase.includes('รายงานจราจร') && /จราจร|traffic/.test(category + ' ' + title)) score += 20
+      if (/โครงสร้าง|structure|structural|etabs|sap2000/.test(phrase) && /โครงสร้างและโยธา/.test(category)) score += 50
+      if (/railway|rail|openrail|รถไฟ|ระบบราง/.test(phrase) && /ระบบราง/.test(category)) score += 18
+      if (/highway|road|openroads|ถนน|ทางหลวง/.test(phrase) && /ทางและถนน/.test(category)) score += 18
+      if (/traffic|จราจร|tia/.test(phrase) && /จราจร/.test(category)) score += 18
+      if (/tor|proposal|ข้อเสนอ|bid/.test(phrase) && /ข้อเสนอ/.test(category)) score += 18
+      if (phrase.includes('earthwork') && title.includes('earthwork')) score += 24
+      if (phrase.includes('alignment') && title.includes('alignment')) score += 45
 
       if (terms.length > 1) {
         score *= 0.28 + 0.72 * coverage
@@ -172,9 +200,9 @@ export function searchUseCases(items: UseCase[], query: string, filters: Filters
 
       score += item.level <= 2 ? 1.5 : item.level === 3 ? 0.8 : 0
       if (item.isNew) score += 0.25
-      return { item, score, coverage }
+      return { item, score, coverage, aliasHit }
     })
-    .filter(({ score }) => score > 1)
+    .filter(({ score, coverage, aliasHit }) => score > 1 && (coverage > 0 || aliasHit))
     .sort((a, b) => b.score - a.score || b.coverage - a.coverage || a.item.id.localeCompare(b.item.id))
     .map(({ item }) => item)
 

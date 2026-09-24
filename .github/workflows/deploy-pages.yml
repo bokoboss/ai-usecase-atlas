@@ -25,6 +25,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install
+      - run: npm run check:search
       - run: npm run build
       - if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: actions/configure-pages@v5
