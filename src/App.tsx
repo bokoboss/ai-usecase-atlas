@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getRelatedUseCases, getRoleNames, getUseCase, loadAtlasData } from './lib/repository'
-import { searchUseCases } from './lib/search'
+import { matchesRole, searchUseCases } from './lib/search'
 import type { Filters, QuickIdea, UseCase } from './types'
 
 const emptyFilters: Filters = { category: '', role: '', software: '', surface: '', level: '' }
@@ -73,6 +73,64 @@ function splitValues(raw: string) {
   return raw.split(/[;,/]|\s\+\s/).map((v) => v.trim()).filter((v) => v.length > 1)
 }
 
+const starterRoleKeywords: Record<string, string[]> = {
+  'Secretary / Admin': ['เลขา', 'ธุรการ', 'admin', 'secretary', 'เอกสาร'],
+  'Traffic Engineer': ['จราจร', 'traffic', 'transport', 'vissim', 'sidra', 'synchro'],
+  'Highway Engineer': ['ทาง', 'ถนน', 'highway', 'road', 'openroads', 'civil 3d'],
+  'Railway Engineer': ['ราง', 'รถไฟ', 'rail', 'openrail', 'track'],
+  'Structural / Civil Engineer': ['โครงสร้าง', 'structural', 'civil', 'etabs', 'sap2000'],
+  'CAD/BIM/GIS User': ['cad', 'bim', 'gis', 'autocad', 'revit', 'qgis', 'civil 3d'],
+  'PM / Project Control': ['บริหารโครงการ', 'project', 'schedule', 'risk', 'wbs', 'control'],
+  'Proposal Team': ['proposal', 'tor', 'ข้อเสนอ', 'bid', 'compliance'],
+  'MD / BU Head': ['ผู้บริหาร', 'management', 'executive', 'decision', 'commercial'],
+  'Power User / Developer': ['โค้ด', 'automation', 'script', 'developer', 'web', 'python'],
+}
+
+function pickRoleStartItems(roleStarts: Array<Record<string, string | number>>, useCases: UseCase[], role: string) {
+  if (role === 'ทุกคน') {
+    return quickWinIds.slice(0, 4).map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item))
+  }
+  const keywords = starterRoleKeywords[role] ?? []
+  return roleStarts
+    .filter((row) => String(row.Role) === role)
+    .map((row, index) => {
+      const item = getUseCase(useCases, String(row['Recommended ID'] ?? ''))
+      if (!item) return null
+      const hay = `${item.categoryTh} ${item.category} ${item.primaryUsers} ${item.discipline} ${item.title} ${item.software}`.toLocaleLowerCase('th-TH')
+      const specific = matchesRole(hay, role) ? 32 : keywords.reduce((score, keyword) => score + (hay.includes(keyword.toLocaleLowerCase('th-TH')) ? 5 : 0), 0)
+      const beginner = item.level <= 2 ? 24 : item.level === 3 ? 14 : item.level === 4 ? 5 : 0
+      return { item, score: specific + beginner - index * 0.05 }
+    })
+    .filter((entry): entry is { item: UseCase, score: number } => Boolean(entry))
+    .sort((a, b) => b.score - a.score || a.item.level - b.item.level || a.item.id.localeCompare(b.item.id))
+    .slice(0, 4)
+    .map(({ item }) => item)
+}
+
+function ideaMomentBucket(value: string) {
+  const text = value.toLocaleLowerCase('th-TH')
+  if (/ประชุม/.test(text)) return 'ประชุม'
+  if (/ตรวจ|qa|review|audit/.test(text)) return 'ตรวจงาน / QA'
+  if (/วิเคราะห์|ออกแบบ|analysis|design/.test(text)) return 'วิเคราะห์ / ออกแบบ'
+  if (/รายงาน|สื่อสาร|เอกสาร|presentation/.test(text)) return 'รายงาน / สื่อสาร'
+  if (/ข้อเสนอ|proposal|tor|bid/.test(text)) return 'ข้อเสนอ / TOR'
+  if (/บริหาร|ติดตาม|ประสาน|project/.test(text)) return 'บริหาร / ติดตาม'
+  if (/พัฒนา|automation|สร้างเครื่องมือ|ลดงานซ้ำ/.test(text)) return 'พัฒนา / Automate'
+  if (/ตัดสินใจ|ผู้บริหาร|decision/.test(text)) return 'ตัดสินใจ / ผู้บริหาร'
+  return 'งานประจำวัน / อื่น ๆ'
+}
+
+function ideaTimeBucket(value: string) {
+  const text = value.toLocaleLowerCase('th-TH')
+  if (/workflow|โปรเจกต์|project/.test(text)) return 'Workflow / Project'
+  const numbers = [...text.matchAll(/\d+/g)].map((match) => Number(match[0]))
+  const upper = numbers.length ? Math.max(...numbers) : 0
+  if (upper && upper <= 10) return '≤10 นาที'
+  if (upper && upper <= 30) return '10–30 นาที'
+  if (upper && upper <= 90) return '30–90 นาที'
+  return upper ? '>90 นาที' : 'ไม่ระบุ'
+}
+
 function topValues(items: UseCase[], field: keyof UseCase, limit = 18) {
   const counts = new Map<string, number>()
   for (const item of items) {
@@ -85,8 +143,10 @@ function topValues(items: UseCase[], field: keyof UseCase, limit = 18) {
 }
 
 function SurfaceBadge({ value }: { value: string }) {
-  const main = value.toLowerCase().includes('codex') ? 'Codex' : value.toLowerCase().includes('work') ? 'Work' : 'Chat'
-  return <span className={`surface-badge surface-${main.toLowerCase()}`}>{main}</span>
+  const lower = value.toLowerCase()
+  const labels = [lower.includes('chat') ? 'Chat' : '', lower.includes('work') ? 'Work' : '', lower.includes('codex') ? 'Codex' : ''].filter(Boolean)
+  const visible = labels.length ? labels : ['Chat']
+  return <span className="surface-group">{visible.map((label) => <span key={label} className={`surface-badge surface-${label.toLowerCase()}`}>{label}</span>)}</span>
 }
 
 function LevelBadge({ level }: { level: number }) {
@@ -168,13 +228,13 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
 
         <section className="workflow-box"><span>WORKFLOW</span><ol>{workflowSteps(item).map((step, index) => <li key={index}>{step}</li>)}</ol></section>
 
+        <section className="guardrail-box">
+          <div className="guardrail-mark">✓</div><div><h3>ก่อนนำผลไปใช้: Human / Engineering Check</h3><p>{item.guardrail}</p></div>
+        </section>
+
         <section className="prompt-box">
           <div className="prompt-head"><div><span className="prompt-label">PROMPT STARTER</span><h3>เริ่มคุยกับ AI แบบนี้</h3></div><button onClick={copyPrompt}>{copied ? 'คัดลอกแล้ว' : 'Copy prompt'}</button></div>
           <pre>{item.promptSeed}</pre>
-        </section>
-
-        <section className="guardrail-box">
-          <div className="guardrail-mark">✓</div><div><h3>Human / Engineering Check</h3><p>{item.guardrail}</p></div>
         </section>
 
         <details className="technical-notes"><summary>Technical / research notes</summary><div className="detail-grid bottom-grid"><section className="detail-section"><h3>Research basis</h3><p>{item.researchTier}{item.researchNote ? ` · ${item.researchNote}` : ''}</p></section><section className="detail-section"><h3>Depth / Priority</h3><p>{item.depth} · {item.priority}</p></section></div></details>
@@ -225,6 +285,9 @@ function App() {
   const [selected, setSelected] = useState<UseCase | null>(null)
   const [activeTab, setActiveTab] = useState<'discover' | 'ideas' | 'toolkit'>('discover')
   const [finderOpen, setFinderOpen] = useState(false)
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+  const [toolkitView, setToolkitView] = useState<'all' | 'saved' | 'tried' | 'recent'>('all')
+  const [copiedIdeaId, setCopiedIdeaId] = useState('')
   const [ideaQuery, setIdeaQuery] = useState('')
   const [ideaMoment, setIdeaMoment] = useState('')
   const [ideaTime, setIdeaTime] = useState('')
@@ -263,7 +326,7 @@ function App() {
   const softwarePairs = useMemo(() => topValues(useCases, 'software', 30), [useCases])
   const softwareNames = useMemo(() => softwarePairs.map(([name]) => name), [softwarePairs])
   const roleNames = useMemo(() => getRoleNames(roleStarts), [roleStarts])
-  const roles = useMemo(() => roleNames.slice(0, 28).map((role) => [role, useCases.filter((u) => `${u.primaryUsers} ${u.discipline}`.includes(role)).length] as [string, number]), [roleNames, useCases])
+  const roles = useMemo(() => roleNames.slice(0, 28).map((role) => [role, useCases.filter((u) => matchesRole(`${u.primaryUsers} ${u.discipline} ${u.categoryTh} ${u.category}`, role)).length] as [string, number]), [roleNames, useCases])
   const surfaces: Array<[string, number]> = [
     ['Chat', useCases.filter((u) => u.surface.toLowerCase().includes('chat')).length],
     ['Work', useCases.filter((u) => u.surface.toLowerCase().includes('work')).length],
@@ -272,28 +335,35 @@ function App() {
 
   const ideaMoments = useMemo(() => {
     const counts = new Map<string, number>()
-    quickIdeas.forEach((idea) => { if (idea.moment) counts.set(idea.moment, (counts.get(idea.moment) ?? 0) + 1) })
+    quickIdeas.forEach((idea) => { const bucket = ideaMomentBucket(idea.moment); counts.set(bucket, (counts.get(bucket) ?? 0) + 1) })
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8)
   }, [quickIdeas])
   const ideaTimes = useMemo(() => {
     const counts = new Map<string, number>()
-    quickIdeas.forEach((idea) => { if (idea.time) counts.set(idea.time, (counts.get(idea.time) ?? 0) + 1) })
+    quickIdeas.forEach((idea) => { const bucket = ideaTimeBucket(idea.time); counts.set(bucket, (counts.get(bucket) ?? 0) + 1) })
     return [...counts.entries()].sort((a, b) => b[1] - a[1])
   }, [quickIdeas])
   const visibleIdeas = useMemo(() => {
     const q = ideaQuery.toLocaleLowerCase('th-TH').trim()
     return quickIdeas.filter((idea) => {
-      if (ideaMoment && idea.moment !== ideaMoment) return false
-      if (ideaTime && idea.time !== ideaTime) return false
+      if (ideaMoment && ideaMomentBucket(idea.moment) !== ideaMoment) return false
+      if (ideaTime && ideaTimeBucket(idea.time) !== ideaTime) return false
       return !q || `${idea.idea} ${idea.role} ${idea.software} ${idea.category} ${idea.moment}`.toLocaleLowerCase('th-TH').includes(q)
     })
   }, [quickIdeas, ideaQuery, ideaMoment, ideaTime])
 
-  const roleStartItems = useMemo(() => roleStarts.filter((row) => String(row.Role) === startRole).sort((a, b) => Number(a.Level ?? 99) - Number(b.Level ?? 99)).map((row) => getUseCase(useCases, String(row['Recommended ID'] ?? ''))).filter((item): item is UseCase => Boolean(item)).slice(0, 6), [roleStarts, useCases, startRole])
+  const roleStartItems = useMemo(() => pickRoleStartItems(roleStarts, useCases, startRole), [roleStarts, useCases, startRole])
   const quickWins = useMemo(() => quickWinIds.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item)), [useCases])
   const savedItems = useMemo(() => savedIds.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item)), [savedIds, useCases])
   const triedItems = useMemo(() => triedIds.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item)), [triedIds, useCases])
   const recentItems = useMemo(() => recentIds.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item)), [recentIds, useCases])
+  const hasActiveFilters = Object.values(filters).some(Boolean)
+  const searchMode = Boolean(query.trim() || hasActiveFilters)
+  const activeFilterCount = Object.values(filters).filter(Boolean).length
+  const toolkitItems = useMemo(() => {
+    const ids = toolkitView === 'saved' ? savedIds : toolkitView === 'tried' ? triedIds : toolkitView === 'recent' ? recentIds : [...new Set([...recentIds, ...savedIds, ...triedIds])]
+    return ids.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item))
+  }, [toolkitView, savedIds, triedIds, recentIds, useCases])
 
   const openUseCase = (item: UseCase) => {
     setSelected(item)
@@ -301,6 +371,14 @@ function App() {
   }
   const toggleSaved = (id: string) => setSavedIds((ids) => toggleStoredId(ids, id))
   const toggleTried = (id: string) => setTriedIds((ids) => toggleStoredId(ids, id))
+  const openIdea = async (idea: QuickIdea) => {
+    const item = getUseCase(useCases, idea.useCaseId)
+    if (item) { openUseCase(item); return }
+    const text = idea.starter?.trim() || idea.idea
+    try { await navigator.clipboard.writeText(text) } catch { return }
+    setCopiedIdeaId(idea.id)
+    window.setTimeout(() => setCopiedIdeaId((current) => current === idea.id ? '' : current), 1600)
+  }
 
   const quickSearch = (value: string) => { setActiveTab('discover'); setQuery(value); setFilters(emptyFilters); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const applyFinder = (task: string, role: string, software: string, level: string) => {
@@ -320,16 +398,21 @@ function App() {
         <button className="brand" onClick={() => { setActiveTab('discover'); setQuery(''); setFilters(emptyFilters) }}>
           <span className="brand-mark">AI</span><span><strong>Use Case Atlas</strong><small>ChatGPT for TR</small></span>
         </button>
-        <nav>
+        <nav className="desktop-nav">
           <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => setActiveTab('discover')}>ค้นหา Use Case</button>
           <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => setActiveTab('ideas')}>{quickIdeas.length} Quick Ideas</button>
           <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => setActiveTab('toolkit')}>My Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
           <a href="https://github.com/bokoboss/ai-usecase-atlas" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </header>
+      <nav className="mobile-nav" aria-label="Primary">
+        <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => setActiveTab('discover')}>ค้นหา</button>
+        <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => setActiveTab('ideas')}>Ideas</button>
+        <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => setActiveTab('toolkit')}>Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
+      </nav>
 
       {activeTab === 'discover' ? <>
-        <main className="hero-wrap">
+        <main className={searchMode ? 'hero-wrap search-active' : 'hero-wrap'}>
           <div className="eyebrow">{useCases.length} USE CASES · TR BU AI ADOPTION LIBRARY</div>
           <h1>วันนี้คุณกำลังทำงานอะไรอยู่?</h1>
           <p className="hero-copy">บอกงานที่กำลังทำ ปัญหาที่เจอ หรือโปรแกรมที่ใช้ แล้วค้นดูว่า ChatGPT, Work หรือ Codex ช่วยตรงไหนได้บ้าง</p>
@@ -340,17 +423,17 @@ function App() {
           <button className="guided-button" onClick={() => setFinderOpen(true)}>ไม่รู้จะค้นอะไร? ใช้ Guided Finder →</button>
         </main>
 
-        <section className="start-here content-width"><div className="section-heading"><div><small>START HERE BY ROLE</small><h2>เลือกบทบาท แล้วเริ่มจากของที่ง่ายก่อน</h2><p>ไม่ต้องอ่าน 600 รายการ ระบบจะคัดจุดเริ่มที่เหมาะกับงานของคุณให้ก่อน</p></div></div><div className="role-chips">{roleNames.map((role) => <button key={role} className={startRole === role ? 'active' : ''} onClick={() => setStartRole(role)}>{role}</button>)}</div><div className="mini-case-grid">{roleStartItems.map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} />)}</div></section>
+        <section className={searchMode ? "start-here content-width search-hidden" : "start-here content-width"}><div className="section-heading"><div><small>START HERE BY ROLE</small><h2>เลือกบทบาท แล้วเริ่มจากของที่ง่ายก่อน</h2><p>ไม่ต้องอ่าน 600 รายการ ระบบจะคัดจุดเริ่มที่เหมาะกับงานของคุณให้ก่อน</p></div></div><div className="role-chips">{roleNames.map((role) => <button key={role} className={startRole === role ? 'active' : ''} onClick={() => setStartRole(role)}>{role}</button>)}</div><div className="mini-case-grid">{roleStartItems.map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} />)}</div></section>
 
-        <section className="quick-win-section content-width"><div className="section-heading"><div><small>5-MINUTE QUICK WINS</small><h2>มีเวลาไม่กี่นาที ลองกับงานที่อยู่ตรงหน้า</h2><p>เริ่มจากงานเล็กที่เห็นผลเร็ว แล้วค่อยขยับไป workflow ที่ซับซ้อนขึ้น</p></div></div><div className="quick-win-grid">{quickWins.slice(0, 8).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="ลองวันนี้" />)}</div></section>
+        <section className={searchMode ? "quick-win-section content-width search-hidden" : "quick-win-section content-width"}><div className="section-heading"><div><small>5-MINUTE QUICK WINS</small><h2>มีเวลาไม่กี่นาที ลองกับงานที่อยู่ตรงหน้า</h2><p>เริ่มจากงานเล็กที่เห็นผลเร็ว แล้วค่อยขยับไป workflow ที่ซับซ้อนขึ้น</p></div></div><div className="quick-win-grid">{quickWins.slice(0, 8).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="ลองวันนี้" />)}</div></section>
 
-        <section className="entry-grid content-width">
+        <section className={searchMode ? "entry-grid content-width search-hidden" : "entry-grid content-width"}>
           <button className="entry-card role-card" onClick={() => document.getElementById('library')?.scrollIntoView({ behavior: 'smooth' })}><span>01</span><div><small>เริ่มจากงาน</small><h2>ค้นจากสิ่งที่กำลังทำ</h2><p>พิมพ์ภาษาธรรมชาติ ไม่ต้องรู้ชื่อฟีเจอร์ AI ก่อน</p></div></button>
           <button className="entry-card" onClick={() => setFinderOpen(true)}><span>02</span><div><small>Guided Finder</small><h2>ให้ระบบช่วยเจาะ use case</h2><p>เลือกบทบาท โปรแกรม และระดับที่อยากลอง</p></div></button>
           <button className="entry-card" onClick={() => { setFilters({ ...emptyFilters, software: 'Excel' }); document.getElementById('library')?.scrollIntoView({ behavior: 'smooth' }) }}><span>03</span><div><small>เริ่มจากเครื่องมือ</small><h2>Excel, CAD, BIM, VISSIM...</h2><p>ดูว่า AI ทำงานร่วมกับโปรแกรมเดิมได้อย่างไร</p></div></button>
         </section>
 
-        <section className="coverage-strip content-width">
+        <section className={searchMode ? "coverage-strip content-width search-hidden" : "coverage-strip content-width"}>
           <div><strong>{useCases.length}</strong><span>Use cases</span></div><div><strong>{quickIdeas.length}</strong><span>Quick ideas</span></div><div><strong>{categories.length}</strong><span>Work categories</span></div><div><strong>{useCases.filter((u) => u.isNew).length}</strong><span>New researched additions</span></div>
         </section>
 
@@ -366,6 +449,7 @@ function App() {
           </aside>
 
           <div className="results-panel">
+            <button className="mobile-filter-button" onClick={() => setMobileFiltersOpen(true)}>ตัวกรอง{activeFilterCount ? ` · ${activeFilterCount}` : ''}</button>
             <div className="results-head"><div><small>USE CASE LIBRARY</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : 'Use cases ที่แนะนำ'}</h2></div><strong>{results.length} รายการ</strong></div>
             <div className="usecase-grid">{results.slice(0, 160).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} key={item.id} />)}</div>
             {results.length > 160 && <div className="result-note">กำลังแสดง 160 รายการแรก — ใช้ Search หรือ Filter เพื่อเจาะให้แคบลง</div>}
@@ -373,13 +457,14 @@ function App() {
           </div>
         </section>
       </> : activeTab === 'ideas' ? <main className="ideas-page content-width">
-        <div className="ideas-hero"><div className="eyebrow">{quickIdeas.length} QUICK IDEAS</div><h1>ยังนึกไม่ออกว่าจะใช้ AI ทำอะไร?</h1><p>เริ่มจาก “ช่วงเวลาที่กำลังทำงาน” หรือเวลาที่มี แทนการเลื่อนดู 800 รายการรวดเดียว</p><div className="idea-search"><SearchIcon /><input value={ideaQuery} onChange={(e) => setIdeaQuery(e.target.value)} placeholder="ค้นไอเดีย เช่น งานเลขา, cost, QGIS, VISSIM, report..."/><span>{visibleIdeas.length}</span></div><div className="idea-filter-block"><small>กำลังทำอะไรอยู่?</small><div className="idea-filter-chips"><button className={!ideaMoment ? 'active' : ''} onClick={() => setIdeaMoment('')}>ทั้งหมด</button>{ideaMoments.map(([name, count]) => <button key={name} className={ideaMoment === name ? 'active' : ''} onClick={() => setIdeaMoment(name)}>{name} · {count}</button>)}</div></div><div className="idea-filter-block"><small>มีเวลาประมาณเท่าไร?</small><div className="idea-filter-chips"><button className={!ideaTime ? 'active' : ''} onClick={() => setIdeaTime('')}>ทุกช่วง</button>{ideaTimes.map(([name, count]) => <button key={name} className={ideaTime === name ? 'active' : ''} onClick={() => setIdeaTime(name)}>{name} · {count}</button>)}</div></div></div>
-        <div className="ideas-grid">{visibleIdeas.slice(0, 120).map((idea) => <button className="idea-card" key={idea.id} onClick={() => { const item = getUseCase(useCases, idea.useCaseId); if (item) openUseCase(item) }}><span>{idea.id}</span><h3>{idea.idea}</h3><p>{idea.role}</p><div><small>{idea.surface}</small><small>{idea.time}</small><small>{idea.useCaseId}</small></div></button>)}</div>{visibleIdeas.length > 120 && <div className="result-note">แสดง 120 ไอเดียแรก — เลือกช่วงงาน/เวลา หรือค้นคำเพิ่มเพื่อเจาะให้แคบลง</div>}
-      </main> : <main className="toolkit-page content-width"><div className="toolkit-hero"><div className="eyebrow">MY AI TOOLKIT</div><h1>Use cases ที่เป็นของคุณ</h1><p>เก็บสิ่งที่อยากลอง ทำเครื่องหมายเมื่อใช้แล้ว และกลับมาดูงานล่าสุดได้โดยไม่ต้องค้นใหม่</p></div><ToolkitSection title="★ เก็บไว้" subtitle="Use cases ที่อยากกลับมาลองหรือใช้ซ้ำ" items={savedItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /><ToolkitSection title="✓ ลองแล้ว" subtitle="สิ่งที่คุณเคยทดลองใช้กับงานจริง" items={triedItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /><ToolkitSection title="ล่าสุด" subtitle="Use cases ที่เพิ่งเปิดดู" items={recentItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /></main>}
+        <div className="ideas-hero"><div className="eyebrow">{quickIdeas.length} QUICK IDEAS</div><h1>ยังนึกไม่ออกว่าจะใช้ AI ทำอะไร?</h1><p>เริ่มจาก “ช่วงเวลาที่กำลังทำงาน” หรือเวลาที่มี แล้วค่อยเจาะไอเดียที่ตรงกับงานแทนการเลื่อนดูรายการทั้งหมด</p><div className="idea-search"><SearchIcon /><input value={ideaQuery} onChange={(e) => setIdeaQuery(e.target.value)} placeholder="ค้นไอเดีย เช่น งานเลขา, cost, QGIS, VISSIM, report..."/><span>{visibleIdeas.length}</span></div><div className="idea-filter-block"><small>กำลังทำอะไรอยู่?</small><div className="idea-filter-chips"><button className={!ideaMoment ? 'active' : ''} onClick={() => setIdeaMoment('')}>ทั้งหมด</button>{ideaMoments.map(([name, count]) => <button key={name} className={ideaMoment === name ? 'active' : ''} onClick={() => setIdeaMoment(name)}>{name} · {count}</button>)}</div></div><div className="idea-filter-block"><small>มีเวลาประมาณเท่าไร?</small><div className="idea-filter-chips"><button className={!ideaTime ? 'active' : ''} onClick={() => setIdeaTime('')}>ทุกช่วง</button>{ideaTimes.map(([name, count]) => <button key={name} className={ideaTime === name ? 'active' : ''} onClick={() => setIdeaTime(name)}>{name} · {count}</button>)}</div></div></div>
+        <div className="ideas-grid">{visibleIdeas.slice(0, 120).map((idea) => <button className={idea.useCaseId === 'Idea Only' ? 'idea-card idea-only' : 'idea-card'} key={idea.id} onClick={() => void openIdea(idea)}><span>{idea.id}</span><h3>{idea.idea}</h3><p>{idea.role}</p><div><small>{idea.surface}</small><small>{ideaTimeBucket(idea.time)}</small><small>{idea.useCaseId === 'Idea Only' ? (copiedIdeaId === idea.id ? 'คัดลอก Starter แล้ว' : 'Copy Starter') : idea.useCaseId}</small></div></button>)}</div>{visibleIdeas.length > 120 && <div className="result-note">แสดง 120 ไอเดียแรก — เลือกช่วงงาน/เวลา หรือค้นคำเพิ่มเพื่อเจาะให้แคบลง</div>}
+      </main> : <main className="toolkit-page content-width"><div className="toolkit-hero"><div className="eyebrow">MY AI TOOLKIT</div><h1>Use cases ที่เป็นของคุณ</h1><p>รายการเดียว ไม่ซ้ำการ์ด — ใช้สถานะ Saved / Tried / Recent เพื่อกลับมาทำงานต่อได้เร็ว</p><div className="toolkit-filter-chips"><button className={toolkitView === 'all' ? 'active' : ''} onClick={() => setToolkitView('all')}>ทั้งหมด</button><button className={toolkitView === 'saved' ? 'active' : ''} onClick={() => setToolkitView('saved')}>★ เก็บไว้ · {savedItems.length}</button><button className={toolkitView === 'tried' ? 'active' : ''} onClick={() => setToolkitView('tried')}>✓ ลองแล้ว · {triedItems.length}</button><button className={toolkitView === 'recent' ? 'active' : ''} onClick={() => setToolkitView('recent')}>ล่าสุด · {recentItems.length}</button></div><p className="toolkit-storage-note">สถานะ Toolkit เก็บใน browser/device นี้เท่านั้น</p></div><ToolkitSection title={toolkitView === 'all' ? 'รายการของคุณ' : toolkitView === 'saved' ? '★ เก็บไว้' : toolkitView === 'tried' ? '✓ ลองแล้ว' : 'ล่าสุด'} subtitle={toolkitView === 'all' ? 'รวมรายการโดยไม่แสดง use case เดียวกันซ้ำหลายส่วน' : 'กรองตามสถานะที่เลือก'} items={toolkitItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /></main>}
 
       <footer className="site-footer"><div><strong>AI Use Case Atlas</strong><span>TR BU · From “ไม่รู้จะใช้ AI ทำอะไร” → “ลองใช้กับงานจริงวันนี้”</span></div><span>{useCases.length} use cases · {quickIdeas.length} quick ideas</span></footer>
       {selected && <DetailPanel item={selected} allUseCases={useCases} onClose={() => setSelected(null)} onOpen={openUseCase} saved={savedIds.includes(selected.id)} tried={triedIds.includes(selected.id)} onToggleSaved={() => toggleSaved(selected.id)} onToggleTried={() => toggleTried(selected.id)} />}
       {finderOpen && <GuidedFinder roles={roleNames.slice(0, 30)} software={softwareNames} onClose={() => setFinderOpen(false)} onApply={applyFinder} />}
+      {mobileFiltersOpen && <div className="mobile-filter-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setMobileFiltersOpen(false) }}><section className="mobile-filter-sheet"><div className="mobile-filter-head"><div><small>FILTER</small><h2>เจาะให้ตรงงาน</h2></div><button className="icon-button" onClick={() => setMobileFiltersOpen(false)}>×</button></div><FilterSelect label="หมวดงาน" value={filters.category} options={categories} onChange={(value) => setFilters((f) => ({ ...f, category: value }))} /><FilterSelect label="บทบาท" value={filters.role} options={roles} onChange={(value) => setFilters((f) => ({ ...f, role: value }))} /><FilterSelect label="Software / Tool" value={filters.software} options={softwarePairs} onChange={(value) => setFilters((f) => ({ ...f, software: value }))} /><FilterSelect label="ChatGPT Surface" value={filters.surface} options={surfaces} onChange={(value) => setFilters((f) => ({ ...f, surface: value }))} /><label className="filter-field"><span>ระดับ</span><select value={filters.level} onChange={(e) => setFilters((f) => ({ ...f, level: e.target.value }))}><option value="">ทุกระดับ</option>{[1,2,3,4,5].map((level) => <option value={level} key={level}>L{level} · {levelLabels[level]}</option>)}</select></label><div className="mobile-filter-actions"><button onClick={() => setFilters(emptyFilters)}>ล้างทั้งหมด</button><button className="primary" onClick={() => setMobileFiltersOpen(false)}>ดู {results.length} รายการ</button></div></section></div>}
     </div>
   )
 }
