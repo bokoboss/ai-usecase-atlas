@@ -2,7 +2,7 @@
 
 ค้นหาว่า AI ช่วยงานของคุณได้อย่างไร — จากงานจริงที่กำลังทำ ไม่ใช่จากชื่อฟีเจอร์ AI
 
-Current corpus: **600 use cases + 800 quick ideas** for Transportation BU workflows, including everyday office work, documents/data, Traffic & Transport, Highway, Railway, Structural/Civil, cost/quantity workflows, CAD/BIM/GIS, simulation, automation, web/apps, PM, proposal and management.
+Current corpus: **600 use cases + 800 raw quick ideas**; the UI removes 150 generated twin variants at load time, leaving 650 distinct discovery cards. for Transportation BU workflows, including everyday office work, documents/data, Traffic & Transport, Highway, Railway, Structural/Civil, cost/quantity workflows, CAD/BIM/GIS, simulation, automation, web/apps, PM, proposal and management.
 
 ## Product principles
 
@@ -32,7 +32,7 @@ Current corpus: **600 use cases + 800 quick ideas** for Transportation BU workfl
 - Official/primary source links for researched software workflows
 - Related use cases
 - Shareable URL using `?uc=<ID>`
-- Searchable **800 Quick Ideas** wall
+- Searchable Quick Ideas wall with runtime deduplication and usable “Idea Only” starter actions
 - Responsive desktop/mobile layout
 
 ## New 2026 expansion
@@ -77,9 +77,9 @@ GitHub Pages workflow is included. Vite base path:
 
 ## Data
 
-- `src/data/usecases.json` — 600 use cases
-- `src/data/ideas.json` — 800 quick ideas
-- `src/data/roleStarts.json` — recommended starting points by role
-- `src/data/expansionMeta.json` — expansion counts and official source families
+- `public/data/usecases.json` — 600 use cases served by the app
+- `public/data/ideas.json` — 800 raw quick ideas served by the app
+- `public/data/roleStarts.json` — recommended starting points by role
+- `data/` — source/mirror dataset retained for content-production workflows
 
 The data layer is separated from UI components so a future PostgreSQL/Supabase + hybrid semantic search backend will not require a frontend rewrite.
