@@ -31,8 +31,8 @@ Current corpus: **600 use cases + 800 raw quick ideas**; the UI removes 150 gene
 - Detail drawer: Pain Point, result, input, workflow, Prompt Starter, Human / Engineering Check
 - Official/primary source links for researched software workflows
 - Related use cases ranked as next-step workflows, with near-duplicate variants separated from the main search results
-- Shareable URL using `?uc=<ID>`
-- Searchable Quick Ideas wall with runtime deduplication and usable “Idea Only” starter actions
+- Shareable URL state for tab, search, filters, Toolkit view and open Use Case / Quick Idea
+- Searchable Quick Ideas wall with runtime deduplication; every card opens a contextual detail guide before Copy Prompt
 - Responsive desktop/mobile layout
 
 ## New 2026 expansion
@@ -112,4 +112,4 @@ All Quick Idea cards now open a detail panel first. Linked ideas expose their fu
 
 ## Phase 5 content quality
 
-The 600-use-case corpus is now guarded by `npm run check:content`. The gate verifies full-corpus field substance, workflow depth, prompt/detail synchronization, duplicate-family limits, software source requirements, and known near-duplicate task pairs. See `docs/CONTENT_QUALITY_PHASE5_FINAL.md`.
+The 600-use-case corpus is now guarded by `npm run check:content`. The gate verifies full-corpus field substance, workflow depth, prompt/detail synchronization, duplicate-family limits, software source requirements, generated-template regressions, and known near-duplicate task pairs. Phase 5D further increased specificity: Desired Result is now 595/600 unique and Workflow/Human Check are 592/600 unique. See `docs/CONTENT_QUALITY_PHASE5_FINAL.md`.

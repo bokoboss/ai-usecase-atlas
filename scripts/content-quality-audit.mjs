@@ -43,6 +43,9 @@ for (const item of items) {
   if (/งาน “.+” ต้องเชื่อมข้อมูล\/เกณฑ์หลายจุดและตรวจย้อนกลับได้/i.test(String(item.painPoint ?? ''))) {
     failures.push(item.id + ': legacy title-substitution pain point remains')
   }
+  if (allTextFields.some((field) => String(item[field] ?? '').includes('เฉพาะงานนี้:'))) {
+    failures.push(item.id + ': generated template marker "เฉพาะงานนี้:" remains')
+  }
 
   const sw = norm(item.software)
   if (['I','J','K','L'].includes(item.categoryCode) && !(item.sources?.length)) failures.push(item.id + ': software/coding use case missing vendor/primary source')
@@ -68,7 +71,8 @@ for (const field of detailFields) {
   const groups = duplicateGroups(field)
   const maxGroup = groups[0]?.length ?? 1
   summary[field] = { unique: new Set(items.map((item) => norm(item[field]))).size, duplicateGroups: groups.length, maxGroup }
-  if (maxGroup > 4) failures.push(field + ': exact duplicate family too large (' + maxGroup + ')')
+  const limit = field === 'desiredResult' || field === 'integrationPattern' || field === 'guardrail' ? 2 : 4
+  if (maxGroup > limit) failures.push(field + ': exact duplicate family too large (' + maxGroup + ', limit ' + limit + ')')
 }
 
 const fingerprints = new Map()
@@ -84,7 +88,8 @@ if (duplicateFingerprints.length) failures.push('Fully duplicated detail records
 const nearDuplicateWatch = [
   ['B23','B38'], ['E05','E25'], ['E40','E51'], ['F04','F14'], ['H02','H24'],
   ['E29','E50'], ['G02','G13'], ['I05','I24'], ['J08','J31'], ['K05','K19'],
-  ['L02','L10'], ['M09','M28'], ['O06','O13']
+  ['L02','L10'], ['M09','M28'], ['O06','O13'],
+  ['C05','C14'], ['E01','E17'], ['P04','P14'], ['P14','P20'], ['N04','N17'], ['N08','N24'], ['F05','F17']
 ]
 const byId = new Map(items.map((item) => [item.id, item]))
 for (const [aId,bId] of nearDuplicateWatch) {
