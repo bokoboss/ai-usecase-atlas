@@ -405,3 +405,29 @@ body { font-size:16px; line-height:1.55; }
   .browse-more button { width:100%; }
   .section-heading .section-action { align-self:stretch; text-align:center; }
 }
+
+
+/* Quick Idea detail */
+.idea-time-badge { display:inline-flex; align-items:center; border-radius:999px; padding:6px 8px; font-size:11px; line-height:1; font-weight:700; color:#b7c9dc; background:rgba(255,255,255,.045); }
+.idea-detail-lead { margin:24px 30px 0; padding:18px 20px; border:1px solid rgba(126,230,196,.16); background:rgba(126,230,196,.035); border-radius:14px; }
+.idea-detail-lead small, .idea-fact-grid small, .idea-guide-grid small, .idea-linked-case small { color:var(--accent); font-size:11px; letter-spacing:.1em; font-weight:800; text-transform:uppercase; }
+.idea-detail-lead p { margin:7px 0 0; color:#b9cadb; font-size:14px; line-height:1.75; }
+.idea-fact-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:16px 30px 0; }
+.idea-fact-grid section { display:grid; gap:6px; border:1px solid var(--line); border-radius:12px; padding:15px 16px; background:rgba(255,255,255,.018); }
+.idea-fact-grid strong { font-size:14px; line-height:1.55; color:#d9e6f4; }
+.idea-guide-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:16px 30px 0; }
+.idea-guide-grid section { border:1px solid var(--line); border-radius:13px; padding:17px; background:#0d1b2c; }
+.idea-guide-grid p { margin:8px 0 0; color:#c5d3e2; font-size:14px; line-height:1.75; }
+.idea-linked-case { margin:18px 30px 40px; padding:18px; border:1px solid rgba(130,183,255,.2); background:rgba(130,183,255,.035); border-radius:15px; display:flex; justify-content:space-between; gap:18px; align-items:center; }
+.idea-linked-case h3 { margin:4px 0 5px; font-size:17px; }
+.idea-linked-case p { margin:0; color:#95a9bf; font-size:13px; line-height:1.65; }
+.idea-linked-case button { flex:none; border:1px solid rgba(130,183,255,.25); background:rgba(130,183,255,.08); color:#a9d4ff; border-radius:10px; padding:10px 12px; cursor:pointer; font-size:12px; font-weight:800; }
+.idea-card small:last-child { color:#9fc8ef; }
+.idea-card.idea-only small:last-child { color:var(--accent); }
+
+@media(max-width:600px){
+  .idea-detail-lead,.idea-fact-grid,.idea-guide-grid,.idea-linked-case { margin-left:18px; margin-right:18px; }
+  .idea-fact-grid,.idea-guide-grid { grid-template-columns:1fr; }
+  .idea-linked-case { align-items:stretch; flex-direction:column; }
+  .idea-linked-case button { width:100%; }
+}

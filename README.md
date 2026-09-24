@@ -95,3 +95,8 @@ The data layer is separated from UI components so a future PostgreSQL/Supabase +
 - Discover hierarchy simplified to Role Start → Quick Wins → Library.
 - Initial library is capped to 24 recommended items until the user searches, filters, or explicitly expands it.
 - Search now has a 40-query regression suite via `npm run check:search`.
+
+
+## Quick Ideas detail behavior
+
+All Quick Idea cards now open a detail panel first. Linked ideas expose their full Use Case as a secondary action. The 50 standalone Idea Only records use contextual input/output/guardrail guides and generated prompts instead of the old generic “นำตัวอย่างงานจริงมาให้ ChatGPT...” starter.
