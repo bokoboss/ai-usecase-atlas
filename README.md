@@ -30,7 +30,7 @@ Current corpus: **600 use cases + 800 raw quick ideas**; the UI removes 150 gene
 - 600 use-case cards
 - Detail drawer: Pain Point, result, input, workflow, Prompt Starter, Human / Engineering Check
 - Official/primary source links for researched software workflows
-- Related use cases
+- Related use cases ranked as next-step workflows, with near-duplicate variants separated from the main search results
 - Shareable URL using `?uc=<ID>`
 - Searchable Quick Ideas wall with runtime deduplication and usable “Idea Only” starter actions
 - Responsive desktop/mobile layout
@@ -83,3 +83,8 @@ GitHub Pages workflow is included. Vite base path:
 - `data/` — source/mirror dataset retained for content-production workflows
 
 The data layer is separated from UI components so a future PostgreSQL/Supabase + hybrid semantic search backend will not require a frontend rewrite.
+
+## Product cleanup notes
+
+- Phase 1: search mode, relevance, Quick Ideas dedupe, mobile navigation/filtering and toolkit consolidation.
+- Phase 2: readability scale, reviewed near-duplicate result grouping, Similar Variants and next-step Related Cases.

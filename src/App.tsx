@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { getRelatedUseCases, getRoleNames, getUseCase, loadAtlasData } from './lib/repository'
+import { getNearDuplicateVariants } from './lib/content'
 import { matchesRole, searchUseCases } from './lib/search'
 import type { Filters, QuickIdea, UseCase } from './types'
 
@@ -189,6 +190,7 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
   const related = useMemo(() => getRelatedUseCases(allUseCases, item, 6), [allUseCases, item])
+  const variants = useMemo(() => getNearDuplicateVariants(allUseCases, item), [allUseCases, item])
 
   const copyPrompt = async () => {
     await navigator.clipboard.writeText(item.promptSeed)
@@ -243,7 +245,8 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
 
         <div className="tag-list">{splitValues(item.tags).slice(0, 12).map((tag) => <span key={tag}>#{tag.replace(/^#/, '')}</span>)}</div>
 
-        {!!related.length && <section className="related-section"><div><small>RELATED USE CASES</small><h3>ทำต่อจากเรื่องนี้</h3></div><div className="related-grid">{related.map((relatedItem) => <button key={relatedItem.id} onClick={() => onOpen(relatedItem)}><span>{relatedItem.id}</span><b>{relatedItem.title}</b></button>)}</div></section>}
+        {!!variants.length && <section className="variant-section"><div><small>SIMILAR VARIANTS</small><h3>Use case ที่ใกล้เคียงมาก</h3><p>Atlas รวมรายการที่ซ้ำเชิงงานออกจากผลค้นหาหลัก แต่ยังเปิดดู variant เหล่านี้ได้เมื่อบริบทต่างกัน</p></div><div className="variant-grid">{variants.map((variant) => <button key={variant.id} onClick={() => onOpen(variant)}><span>{variant.id} · L{variant.level}</span><b>{variant.title}</b></button>)}</div></section>}
+        {!!related.length && <section className="related-section"><div><small>NEXT USE CASES</small><h3>งานที่ควรทำต่อจากเรื่องนี้</h3></div><div className="related-grid">{related.map((relatedItem) => <button key={relatedItem.id} onClick={() => onOpen(relatedItem)}><span>{relatedItem.id} · L{relatedItem.level}</span><b>{relatedItem.title}</b></button>)}</div></section>}
       </article>
     </div>
   )
@@ -451,6 +454,7 @@ function App() {
           <div className="results-panel">
             <button className="mobile-filter-button" onClick={() => setMobileFiltersOpen(true)}>ตัวกรอง{activeFilterCount ? ` · ${activeFilterCount}` : ''}</button>
             <div className="results-head"><div><small>USE CASE LIBRARY</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : 'Use cases ที่แนะนำ'}</h2></div><strong>{results.length} รายการ</strong></div>
+            <p className="results-subnote">รายการที่ซ้ำเชิงงานมากจะถูกรวมไว้เป็นผลลัพธ์เดียว และดู variant ได้จากหน้ารายละเอียด</p>
             <div className="usecase-grid">{results.slice(0, 160).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} key={item.id} />)}</div>
             {results.length > 160 && <div className="result-note">กำลังแสดง 160 รายการแรก — ใช้ Search หรือ Filter เพื่อเจาะให้แคบลง</div>}
             {!results.length && <div className="empty-state"><h3>ยังไม่พบ use case ที่ตรง</h3><p>ลองใช้คำสั้นลง เช่น “Excel”, “รายงาน”, “ประชุม”, “OpenRoads”, “Revit”, “VISSIM” หรือกดล้าง filter</p></div>}
