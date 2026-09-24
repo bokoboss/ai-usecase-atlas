@@ -1,32 +1,44 @@
-# Content Quality Pass v3 — Coding & Web/App
+# Content Quality Pass v3 — Coding & Web
 
-Date: 2026-09-24
+**Date:** 2026-09-24  
+**Scope:** K — Coding & Automation; L — Web & App Development  
+**Corpus:** 600 use cases total; 70 K/L use cases.
 
-## Scope
-- Category K — Coding & Automation: 40
-- Category L — Web & App Development: 30
-- Total updated: 70
+## Why this pass
 
-## Quality rules applied
-- Replaced generic Code / Build / Automation / AI-assisted workflows with task-specific implementation sequences.
-- Added inspect-first, dry-run/read-only, fixture/benchmark, validation/logging, rollback and release evidence.
-- Strengthened secrets/auth/input/file-upload/API controls for web and integration workflows.
-- Added source/version/environment checks for Codex, GitHub, PowerShell, Excel VBA, Office Scripts and browser/PWA capabilities.
-- Preserved all use-case IDs, Saved/Tried state compatibility and share URLs.
-- Corrected keyword-overlap misclassification for Git/GitHub (K09) and offline PWA survey (L28), and deepened K01/K11/K18.
+The K/L corpus was already materially stronger than the earlier baseline, but 57 cases still shared workflow templates across tasks that have different failure modes. This pass differentiates those workflows and removes legacy broad software labels.
 
-## QA
-- K/L items updated: 70
-- Generic workflows remaining: 0
-- Duplicate promptSeed values: 0
-- Duplicate adoptionHook values: 0
-- K/L items without sources: 0
-- Source links across K/L: 240
-- IDs changed: 0
+## What changed
 
-## Current source families
-- OpenAI Codex / ChatGPT Work & Codex
-- GitHub protected branches, Actions secure use, deployment environments and secrets
-- Microsoft Excel VBA, Office Scripts and PowerShell execution-policy documentation
-- OWASP input validation, file upload, REST, secrets and secure code review guidance
-- MDN Service Worker and IndexedDB documentation for offline/PWA workflows
+- Refined **57** K/L cases that shared workflows with materially different tasks.
+- Differentiated file automation, rename/archive, scheduler jobs, parsing/OCR, CLI tools, unit/regression tests, debugging, refactoring, APIs, Git/GitHub, calculators, dashboards, forms/databases, RBAC, audit logs, document search, map apps, 2D/3D viewers, prototypes, responsive UX, file import/export and QA tools.
+- Replaced legacy software labels such as `Python / VBA / PowerShell / Git` and `HTML / CSS / JS / Web framework / Database` with task-specific environments.
+- Rebuilt copyable prompts so each refined case embeds its own workflow and QA gate.
+- Updated current official/primary references across OpenAI Codex, Microsoft automation, GitHub/GitHub Actions, Vite, Python, PostgreSQL, MDN, Three.js and OWASP guidance.
+
+## QA result
+
+- K/L use cases: **70**
+- K: **40**; L: **30**
+- Duplicate workflow strings: **0**
+- Duplicate guardrail strings: **0**
+- Duplicate prompt strings: **0**
+- Duplicate adoption hooks: **0**
+- K/L cases without sources: **0**
+- Legacy broad software labels remaining: **0**
+- Forbidden temporary fields: **0**
+- Unique IDs: **600/600**
+- Use-case IDs changed: **0**
+
+## Engineering rules reinforced
+
+1. Inspect before edit.
+2. Read-only/dry-run first for file and data automation.
+3. Independent benchmark before modifying calculation code or expected test results.
+4. Reproduce a bug before patching it.
+5. Refactor separately from feature changes.
+6. Server-side validation and authorization for web/data apps.
+7. Least-privilege credentials and no secrets in source/logs.
+8. Reproducible build/test/release with explicit rollback.
+9. Traceability to source/version/record for engineering and document workflows.
+10. Production deployment only from reviewed, tested artifacts.
