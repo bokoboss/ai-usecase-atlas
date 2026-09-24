@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { getRelatedUseCases, getRoleNames, getUseCase, loadAtlasData } from './lib/repository'
 import { getNearDuplicateVariants } from './lib/content'
 import { matchesRole, searchUseCases } from './lib/search'
+import { getIdeaGuide, getIdeaPrompt } from './lib/ideaDetail'
 import type { Filters, QuickIdea, UseCase } from './types'
 
 const emptyFilters: Filters = { category: '', role: '', software: '', surface: '', level: '' }
@@ -252,6 +253,62 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
   )
 }
 
+function IdeaDetailPanel({ idea, linkedUseCase, onClose, onOpenUseCase }: { idea: QuickIdea, linkedUseCase?: UseCase | null, onClose: () => void, onOpenUseCase: (item: UseCase) => void }) {
+  const [copied, setCopied] = useState(false)
+  const guide = useMemo(() => getIdeaGuide(idea, linkedUseCase), [idea, linkedUseCase])
+  const prompt = useMemo(() => getIdeaPrompt(idea, linkedUseCase), [idea, linkedUseCase])
+
+  const copyPrompt = async () => {
+    await navigator.clipboard.writeText(prompt)
+    setCopied(true)
+    window.setTimeout(() => setCopied(false), 1600)
+  }
+
+  return (
+    <div className="detail-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) onClose() }}>
+      <article className="detail-panel idea-detail-panel" aria-modal="true" role="dialog">
+        <div className="detail-sticky">
+          <div>
+            <div className="detail-kicker"><span className="id-chip">{idea.id}</span><SurfaceBadge value={idea.surface} /><span className="idea-time-badge">{ideaTimeBucket(idea.time)}</span></div>
+            <h2>{idea.idea}</h2>
+          </div>
+          <button className="icon-button" onClick={onClose} aria-label="ปิด">×</button>
+        </div>
+
+        <section className="idea-detail-lead">
+          <small>QUICK IDEA</small>
+          <p>แนวทางเริ่มต้นแบบสั้นสำหรับงานจริง กดดูรายละเอียดก่อน แล้วค่อยคัดลอก Prompt เมื่อเข้าใจ input/output และจุดที่ต้องตรวจแล้ว</p>
+        </section>
+
+        <div className="idea-fact-grid">
+          <section><small>ใช้เมื่อ</small><strong>{idea.moment}</strong></section>
+          <section><small>เหมาะกับ</small><strong>{idea.role}</strong></section>
+          <section><small>เครื่องมือ</small><strong>{idea.software && idea.software !== 'ตามงาน' ? idea.software : idea.surface}</strong></section>
+          <section><small>เวลาเริ่มต้น</small><strong>{idea.time}</strong></section>
+        </div>
+
+        <div className="idea-guide-grid">
+          <section><small>เตรียมอะไร</small><p>{guide.inputHint}</p></section>
+          <section><small>ควรได้อะไร</small><p>{guide.outputHint}</p></section>
+        </div>
+
+        <section className="workflow-box"><span>HOW TO TRY</span><ol>{guide.steps.map((step, index) => <li key={index}>{step}</li>)}</ol></section>
+
+        <section className="guardrail-box">
+          <div className="guardrail-mark">✓</div><div><h3>ก่อนนำผลไปใช้</h3><p>{guide.guardrail}</p></div>
+        </section>
+
+        <section className="prompt-box">
+          <div className="prompt-head"><div><span className="prompt-label">PROMPT STARTER</span><h3>{linkedUseCase ? 'Prompt จาก Use Case ที่เชื่อมโยง' : 'Prompt ที่ออกแบบสำหรับไอเดียนี้'}</h3></div><button onClick={copyPrompt}>{copied ? 'คัดลอกแล้ว' : 'Copy prompt'}</button></div>
+          <pre>{prompt}</pre>
+        </section>
+
+        {linkedUseCase && <section className="idea-linked-case"><div><small>FULL USE CASE · {linkedUseCase.id}</small><h3>{linkedUseCase.title}</h3><p>{displayOutcome(linkedUseCase)}</p></div><button onClick={() => { onClose(); onOpenUseCase(linkedUseCase) }}>เปิดรายละเอียด Use Case →</button></section>}
+      </article>
+    </div>
+  )
+}
+
 function MiniCaseCard({ item, onOpen, label }: { item: UseCase, onOpen: (item: UseCase) => void, label?: string }) {
   return <button className="mini-case" onClick={() => onOpen(item)}><div><span>{label || `L${item.level} · ${levelLabels[item.level]}`}</span><SurfaceBadge value={item.surface} /></div><h3>{item.title}</h3><p>{displayOutcome(item)}</p></button>
 }
@@ -290,7 +347,7 @@ function App() {
   const [finderOpen, setFinderOpen] = useState(false)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
   const [toolkitView, setToolkitView] = useState<'all' | 'saved' | 'tried' | 'recent'>('all')
-  const [copiedIdeaId, setCopiedIdeaId] = useState('')
+  const [selectedIdea, setSelectedIdea] = useState<QuickIdea | null>(null)
   const [browseAll, setBrowseAll] = useState(false)
   const [ideaQuery, setIdeaQuery] = useState('')
   const [ideaMoment, setIdeaMoment] = useState('')
@@ -371,19 +428,13 @@ function App() {
   }, [toolkitView, savedIds, triedIds, recentIds, useCases])
 
   const openUseCase = (item: UseCase) => {
+    setSelectedIdea(null)
     setSelected(item)
     setRecentIds((ids) => [item.id, ...ids.filter((id) => id !== item.id)].slice(0, 12))
   }
   const toggleSaved = (id: string) => setSavedIds((ids) => toggleStoredId(ids, id))
   const toggleTried = (id: string) => setTriedIds((ids) => toggleStoredId(ids, id))
-  const openIdea = async (idea: QuickIdea) => {
-    const item = getUseCase(useCases, idea.useCaseId)
-    if (item) { openUseCase(item); return }
-    const text = idea.starter?.trim() || idea.idea
-    try { await navigator.clipboard.writeText(text) } catch { return }
-    setCopiedIdeaId(idea.id)
-    window.setTimeout(() => setCopiedIdeaId((current) => current === idea.id ? '' : current), 1600)
-  }
+  const openIdea = (idea: QuickIdea) => setSelectedIdea(idea)
 
   const quickSearch = (value: string) => { setActiveTab('discover'); setQuery(value); setFilters(emptyFilters); setBrowseAll(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
   const applyFinder = (task: string, role: string, software: string, level: string) => {
@@ -459,11 +510,12 @@ function App() {
         </section>
       </> : activeTab === 'ideas' ? <main className="ideas-page content-width">
         <div className="ideas-hero"><div className="eyebrow">{quickIdeas.length} QUICK IDEAS</div><h1>ยังนึกไม่ออกว่าจะใช้ AI ทำอะไร?</h1><p>เริ่มจาก “ช่วงเวลาที่กำลังทำงาน” หรือเวลาที่มี แล้วค่อยเจาะไอเดียที่ตรงกับงานแทนการเลื่อนดูรายการทั้งหมด</p><div className="idea-search"><SearchIcon /><input value={ideaQuery} onChange={(e) => setIdeaQuery(e.target.value)} placeholder="ค้นไอเดีย เช่น งานเลขา, cost, QGIS, VISSIM, report..."/><span>{visibleIdeas.length}</span></div><div className="idea-filter-block"><small>กำลังทำอะไรอยู่?</small><div className="idea-filter-chips"><button className={!ideaMoment ? 'active' : ''} onClick={() => setIdeaMoment('')}>ทั้งหมด</button>{ideaMoments.map(([name, count]) => <button key={name} className={ideaMoment === name ? 'active' : ''} onClick={() => setIdeaMoment(name)}>{name} · {count}</button>)}</div></div><div className="idea-filter-block"><small>มีเวลาประมาณเท่าไร?</small><div className="idea-filter-chips"><button className={!ideaTime ? 'active' : ''} onClick={() => setIdeaTime('')}>ทุกช่วง</button>{ideaTimes.map(([name, count]) => <button key={name} className={ideaTime === name ? 'active' : ''} onClick={() => setIdeaTime(name)}>{name} · {count}</button>)}</div></div></div>
-        <div className="ideas-grid">{visibleIdeas.slice(0, 120).map((idea) => <button className={idea.useCaseId === 'Idea Only' ? 'idea-card idea-only' : 'idea-card'} key={idea.id} onClick={() => void openIdea(idea)}><span>{idea.id}</span><h3>{idea.idea}</h3><p>{idea.role}</p><div><small>{idea.surface}</small><small>{ideaTimeBucket(idea.time)}</small><small>{idea.useCaseId === 'Idea Only' ? (copiedIdeaId === idea.id ? 'คัดลอก Starter แล้ว' : 'Copy Starter') : idea.useCaseId}</small></div></button>)}</div>{visibleIdeas.length > 120 && <div className="result-note">แสดง 120 ไอเดียแรก — เลือกช่วงงาน/เวลา หรือค้นคำเพิ่มเพื่อเจาะให้แคบลง</div>}
+        <div className="ideas-grid">{visibleIdeas.slice(0, 120).map((idea) => <button className={idea.useCaseId === 'Idea Only' ? 'idea-card idea-only' : 'idea-card'} key={idea.id} onClick={() => openIdea(idea)}><span>{idea.id}</span><h3>{idea.idea}</h3><p>{idea.role}</p><div><small>{idea.surface}</small><small>{ideaTimeBucket(idea.time)}</small><small>{idea.useCaseId === 'Idea Only' ? 'QUICK GUIDE →' : `USE CASE ${idea.useCaseId} →`}</small></div></button>)}</div>{visibleIdeas.length > 120 && <div className="result-note">แสดง 120 ไอเดียแรก — เลือกช่วงงาน/เวลา หรือค้นคำเพิ่มเพื่อเจาะให้แคบลง</div>}
       </main> : <main className="toolkit-page content-width"><div className="toolkit-hero"><div className="eyebrow">MY AI TOOLKIT</div><h1>Use cases ที่เป็นของคุณ</h1><p>รายการเดียว ไม่ซ้ำการ์ด — ใช้สถานะ Saved / Tried / Recent เพื่อกลับมาทำงานต่อได้เร็ว</p><div className="toolkit-filter-chips"><button className={toolkitView === 'all' ? 'active' : ''} onClick={() => setToolkitView('all')}>ทั้งหมด</button><button className={toolkitView === 'saved' ? 'active' : ''} onClick={() => setToolkitView('saved')}>★ เก็บไว้ · {savedItems.length}</button><button className={toolkitView === 'tried' ? 'active' : ''} onClick={() => setToolkitView('tried')}>✓ ลองแล้ว · {triedItems.length}</button><button className={toolkitView === 'recent' ? 'active' : ''} onClick={() => setToolkitView('recent')}>ล่าสุด · {recentItems.length}</button></div><p className="toolkit-storage-note">สถานะ Toolkit เก็บใน browser/device นี้เท่านั้น</p></div><ToolkitSection title={toolkitView === 'all' ? 'รายการของคุณ' : toolkitView === 'saved' ? '★ เก็บไว้' : toolkitView === 'tried' ? '✓ ลองแล้ว' : 'ล่าสุด'} subtitle={toolkitView === 'all' ? 'รวมรายการโดยไม่แสดง use case เดียวกันซ้ำหลายส่วน' : 'กรองตามสถานะที่เลือก'} items={toolkitItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /></main>}
 
       <footer className="site-footer"><div><strong>AI Use Case Atlas</strong><span>TR BU · From “ไม่รู้จะใช้ AI ทำอะไร” → “ลองใช้กับงานจริงวันนี้”</span></div><span>{useCases.length} use cases · {quickIdeas.length} quick ideas</span></footer>
       {selected && <DetailPanel item={selected} allUseCases={useCases} onClose={() => setSelected(null)} onOpen={openUseCase} saved={savedIds.includes(selected.id)} tried={triedIds.includes(selected.id)} onToggleSaved={() => toggleSaved(selected.id)} onToggleTried={() => toggleTried(selected.id)} />}
+      {selectedIdea && <IdeaDetailPanel idea={selectedIdea} linkedUseCase={selectedIdea.useCaseId !== 'Idea Only' ? getUseCase(useCases, selectedIdea.useCaseId) : null} onClose={() => setSelectedIdea(null)} onOpenUseCase={openUseCase} />}
       {finderOpen && <GuidedFinder roles={roleNames.slice(0, 30)} software={softwareNames} onClose={() => setFinderOpen(false)} onApply={applyFinder} />}
       {mobileFiltersOpen && <div className="mobile-filter-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setMobileFiltersOpen(false) }}><section className="mobile-filter-sheet"><div className="mobile-filter-head"><div><small>FILTER</small><h2>เจาะให้ตรงงาน</h2></div><button className="icon-button" onClick={() => setMobileFiltersOpen(false)}>×</button></div><FilterSelect label="หมวดงาน" value={filters.category} options={categories} onChange={(value) => setFilters((f) => ({ ...f, category: value }))} /><FilterSelect label="บทบาท" value={filters.role} options={roles} onChange={(value) => setFilters((f) => ({ ...f, role: value }))} /><FilterSelect label="Software / Tool" value={filters.software} options={softwarePairs} onChange={(value) => setFilters((f) => ({ ...f, software: value }))} /><FilterSelect label="ChatGPT Surface" value={filters.surface} options={surfaces} onChange={(value) => setFilters((f) => ({ ...f, surface: value }))} /><label className="filter-field"><span>ระดับ</span><select value={filters.level} onChange={(e) => setFilters((f) => ({ ...f, level: e.target.value }))}><option value="">ทุกระดับ</option>{[1,2,3,4,5].map((level) => <option value={level} key={level}>L{level} · {levelLabels[level]}</option>)}</select></label><div className="mobile-filter-actions"><button onClick={() => setFilters(emptyFilters)}>ล้างทั้งหมด</button><button className="primary" onClick={() => setMobileFiltersOpen(false)}>ดู {results.length} รายการ</button></div></section></div>}
     </div>
