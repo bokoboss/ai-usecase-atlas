@@ -3,6 +3,7 @@ import { getRelatedUseCases, getRoleNames, getUseCase, loadAtlasData } from './l
 import { getNearDuplicateVariants } from './lib/content'
 import { matchesRole, searchUseCases } from './lib/search'
 import { getIdeaGuide, getIdeaPrompt } from './lib/ideaDetail'
+import { buildAtlasUrl, parseAtlasRoute, type AtlasRouteState, type AtlasTab, type ToolkitView } from './lib/urlState'
 import type { Filters, QuickIdea, UseCase } from './types'
 
 const emptyFilters: Filters = { category: '', role: '', software: '', surface: '', level: '' }
@@ -159,19 +160,24 @@ function SearchIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.7-4.7m2.2-5.8a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z" /></svg>
 }
 
-function UseCaseCard({ item, onOpen, saved = false, tried = false }: { item: UseCase, onOpen: (item: UseCase) => void, saved?: boolean, tried?: boolean }) {
+function UseCaseCard({ item, onOpen, saved = false, tried = false, onToggleSaved, onToggleTried }: { item: UseCase, onOpen: (item: UseCase) => void, saved?: boolean, tried?: boolean, onToggleSaved?: () => void, onToggleTried?: () => void }) {
   return (
-    <button className="usecase-card" onClick={() => onOpen(item)}>
-      <div className="card-topline">
-        <div className="badge-row"><span className="id-chip">{item.id}</span>{item.isNew && <span className="new-badge">NEW</span>}</div>
-        <div className="badge-row"><SurfaceBadge value={item.surface} /><LevelBadge level={item.level} /></div>
-      </div>
-      <h3>{item.title}</h3>
-      <div className="card-outcome"><small>ได้อะไร</small><p>{displayOutcome(item)}</p></div>
-      <div className="card-meta"><span>{item.categoryTh}</span><span>{item.primaryUsers}</span></div>
-      {(saved || tried) && <div className="card-state">{saved && <span>★ เก็บไว้</span>}{tried && <span>✓ ลองแล้ว</span>}</div>}
-      {item.software && item.software !== '-' && <div className="software-line">{item.software}</div>}
-    </button>
+    <article className="usecase-card">
+      <button className="usecase-card-main" onClick={() => onOpen(item)}>
+        <div className="card-topline">
+          <div className="badge-row"><span className="id-chip">{item.id}</span>{item.isNew && <span className="new-badge">NEW</span>}</div>
+          <div className="badge-row"><SurfaceBadge value={item.surface} /><LevelBadge level={item.level} /></div>
+        </div>
+        <h3>{item.title}</h3>
+        <div className="card-outcome"><small>ได้อะไร</small><p>{displayOutcome(item)}</p></div>
+        <div className="card-meta"><span>{item.categoryTh}</span><span>{item.primaryUsers}</span></div>
+        {item.software && item.software !== '-' && <div className="software-line">{item.software}</div>}
+      </button>
+      {(onToggleSaved || onToggleTried) && <div className="card-quick-actions">
+        {onToggleSaved && <button className={saved ? 'active' : ''} onClick={onToggleSaved} aria-label={saved ? `นำ ${item.title} ออกจากรายการเก็บไว้` : `เก็บ ${item.title}`}>{saved ? '★ เก็บแล้ว' : '☆ เก็บไว้'}</button>}
+        {onToggleTried && <button className={tried ? 'active' : ''} onClick={onToggleTried} aria-label={tried ? `ยกเลิกสถานะลองแล้วของ ${item.title}` : `ทำเครื่องหมายว่าลอง ${item.title} แล้ว`}>{tried ? '✓ ลองแล้ว' : 'ลองแล้ว?'}</button>}
+      </div>}
+    </article>
   )
 }
 
@@ -214,7 +220,7 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
             <div className="detail-kicker"><span className="id-chip">{item.id}</span>{item.isNew && <span className="new-badge">NEW 2026</span>}<SurfaceBadge value={item.surface} /><LevelBadge level={item.level} /></div>
             <h2>{item.title}</h2>
           </div>
-          <div className="detail-actions"><button className={saved ? 'share-button active-tool' : 'share-button'} onClick={onToggleSaved}>{saved ? '★ เก็บแล้ว' : '☆ เก็บไว้'}</button><button className={tried ? 'share-button active-tool' : 'share-button'} onClick={onToggleTried}>{tried ? '✓ ลองแล้ว' : 'ลองแล้ว?'}</button><button className="share-button" onClick={copyShare}>{shared ? 'Link copied' : 'Share'}</button><button className="icon-button" onClick={onClose} aria-label="ปิด">×</button></div>
+          <div className="detail-actions"><button className="share-button primary-action" onClick={copyPrompt}>{copied ? '✓ Prompt copied' : 'Copy prompt'}</button><button className={saved ? 'share-button active-tool' : 'share-button'} onClick={onToggleSaved}>{saved ? '★ เก็บแล้ว' : '☆ เก็บไว้'}</button><button className={tried ? 'share-button active-tool' : 'share-button'} onClick={onToggleTried}>{tried ? '✓ ลองแล้ว' : 'ลองแล้ว?'}</button><button className="share-button" onClick={copyShare}>{shared ? 'Link copied' : 'Share'}</button><button className="icon-button" onClick={onClose} aria-label="ปิด">×</button></div>
         </div>
 
         <section className="detail-intro">
@@ -255,6 +261,7 @@ function DetailPanel({ item, allUseCases, onClose, onOpen, saved, tried, onToggl
 
 function IdeaDetailPanel({ idea, linkedUseCase, onClose, onOpenUseCase }: { idea: QuickIdea, linkedUseCase?: UseCase | null, onClose: () => void, onOpenUseCase: (item: UseCase) => void }) {
   const [copied, setCopied] = useState(false)
+  const [shared, setShared] = useState(false)
   const guide = useMemo(() => getIdeaGuide(idea, linkedUseCase), [idea, linkedUseCase])
   const prompt = useMemo(() => getIdeaPrompt(idea, linkedUseCase), [idea, linkedUseCase])
 
@@ -262,6 +269,11 @@ function IdeaDetailPanel({ idea, linkedUseCase, onClose, onOpenUseCase }: { idea
     await navigator.clipboard.writeText(prompt)
     setCopied(true)
     window.setTimeout(() => setCopied(false), 1600)
+  }
+  const copyShare = async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    setShared(true)
+    window.setTimeout(() => setShared(false), 1600)
   }
 
   return (
@@ -272,7 +284,7 @@ function IdeaDetailPanel({ idea, linkedUseCase, onClose, onOpenUseCase }: { idea
             <div className="detail-kicker"><span className="id-chip">{idea.id}</span><SurfaceBadge value={idea.surface} /><span className="idea-time-badge">{ideaTimeBucket(idea.time)}</span></div>
             <h2>{idea.idea}</h2>
           </div>
-          <button className="icon-button" onClick={onClose} aria-label="ปิด">×</button>
+          <div className="detail-actions"><button className="share-button primary-action" onClick={copyPrompt}>{copied ? '✓ Prompt copied' : 'Copy prompt'}</button><button className="share-button" onClick={copyShare}>{shared ? 'Link copied' : 'Share'}</button><button className="icon-button" onClick={onClose} aria-label="ปิด">×</button></div>
         </div>
 
         <section className="idea-detail-lead">
@@ -303,7 +315,7 @@ function IdeaDetailPanel({ idea, linkedUseCase, onClose, onOpenUseCase }: { idea
           <pre>{prompt}</pre>
         </section>
 
-        {linkedUseCase && <section className="idea-linked-case"><div><small>FULL USE CASE · {linkedUseCase.id}</small><h3>{linkedUseCase.title}</h3><p>{displayOutcome(linkedUseCase)}</p></div><button onClick={() => { onClose(); onOpenUseCase(linkedUseCase) }}>เปิดรายละเอียด Use Case →</button></section>}
+        {linkedUseCase && <section className="idea-linked-case"><div><small>FULL USE CASE · {linkedUseCase.id}</small><h3>{linkedUseCase.title}</h3><p>{displayOutcome(linkedUseCase)}</p></div><button onClick={() => onOpenUseCase(linkedUseCase)}>เปิดรายละเอียด Use Case →</button></section>}
       </article>
     </div>
   )
@@ -313,8 +325,8 @@ function MiniCaseCard({ item, onOpen, label }: { item: UseCase, onOpen: (item: U
   return <button className="mini-case" onClick={() => onOpen(item)}><div><span>{label || `L${item.level} · ${levelLabels[item.level]}`}</span><SurfaceBadge value={item.surface} /></div><h3>{item.title}</h3><p>{displayOutcome(item)}</p></button>
 }
 
-function ToolkitSection({ title, subtitle, items, onOpen, savedIds, triedIds }: { title: string, subtitle: string, items: UseCase[], onOpen: (item: UseCase) => void, savedIds: string[], triedIds: string[] }) {
-  return <section className="toolkit-section"><div className="section-heading"><div><small>MY AI TOOLKIT</small><h2>{title}</h2><p>{subtitle}</p></div><strong>{items.length}</strong></div>{items.length ? <div className="usecase-grid">{items.map((item) => <UseCaseCard key={item.id} item={item} onOpen={onOpen} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} />)}</div> : <div className="empty-state compact"><p>ยังไม่มีรายการในส่วนนี้ ลองเปิด use case แล้วกดเก็บไว้หรือทำเครื่องหมายว่า “ลองแล้ว”</p></div>}</section>
+function ToolkitSection({ title, subtitle, items, onOpen, savedIds, triedIds, onToggleSaved, onToggleTried }: { title: string, subtitle: string, items: UseCase[], onOpen: (item: UseCase) => void, savedIds: string[], triedIds: string[], onToggleSaved: (id: string) => void, onToggleTried: (id: string) => void }) {
+  return <section className="toolkit-section"><div className="section-heading"><div><small>MY AI TOOLKIT</small><h2>{title}</h2><p>{subtitle}</p></div><strong>{items.length}</strong></div>{items.length ? <div className="usecase-grid">{items.map((item) => <UseCaseCard key={item.id} item={item} onOpen={onOpen} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} onToggleSaved={() => onToggleSaved(item.id)} onToggleTried={() => onToggleTried(item.id)} />)}</div> : <div className="empty-state compact"><p>ยังไม่มีรายการในส่วนนี้ ลองเปิด use case แล้วกดเก็บไว้หรือทำเครื่องหมายว่า “ลองแล้ว”</p></div>}</section>
 }
 
 function GuidedFinder({ roles, software, onClose, onApply }: { roles: string[], software: string[], onClose: () => void, onApply: (query: string, role: string, software: string, level: string) => void }) {
@@ -335,27 +347,29 @@ function GuidedFinder({ roles, software, onClose, onApply }: { roles: string[], 
 }
 
 function App() {
+  const [initialRoute] = useState(() => parseAtlasRoute(typeof window !== 'undefined' ? window.location.search : ''))
   const [useCases, setUseCases] = useState<UseCase[]>([])
   const [quickIdeas, setQuickIdeas] = useState<QuickIdea[]>([])
   const [roleStarts, setRoleStarts] = useState<Array<Record<string, string | number>>>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
-  const [query, setQuery] = useState('')
-  const [filters, setFilters] = useState<Filters>(emptyFilters)
+  const [query, setQuery] = useState(initialRoute.query)
+  const [filters, setFilters] = useState<Filters>(initialRoute.filters)
   const [selected, setSelected] = useState<UseCase | null>(null)
-  const [activeTab, setActiveTab] = useState<'discover' | 'ideas' | 'toolkit'>('discover')
+  const [activeTab, setActiveTab] = useState<AtlasTab>(initialRoute.tab)
   const [finderOpen, setFinderOpen] = useState(false)
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
-  const [toolkitView, setToolkitView] = useState<'all' | 'saved' | 'tried' | 'recent'>('all')
+  const [toolkitView, setToolkitView] = useState<ToolkitView>(initialRoute.toolkitView)
   const [selectedIdea, setSelectedIdea] = useState<QuickIdea | null>(null)
-  const [browseAll, setBrowseAll] = useState(false)
-  const [ideaQuery, setIdeaQuery] = useState('')
-  const [ideaMoment, setIdeaMoment] = useState('')
-  const [ideaTime, setIdeaTime] = useState('')
-  const [startRole, setStartRole] = useState('ทุกคน')
+  const [browseAll, setBrowseAll] = useState(initialRoute.browseAll)
+  const [ideaQuery, setIdeaQuery] = useState(initialRoute.ideaQuery)
+  const [ideaMoment, setIdeaMoment] = useState(initialRoute.ideaMoment)
+  const [ideaTime, setIdeaTime] = useState(initialRoute.ideaTime)
+  const [startRole, setStartRole] = useState(initialRoute.startRole)
   const [savedIds, setSavedIds] = useStoredIds('ai-atlas:saved')
   const [triedIds, setTriedIds] = useStoredIds('ai-atlas:tried')
   const [recentIds, setRecentIds] = useStoredIds('ai-atlas:recent')
+  const [viewLinkCopied, setViewLinkCopied] = useState(false)
 
   useEffect(() => {
     loadAtlasData()
@@ -363,20 +377,6 @@ function App() {
       .catch((error) => setLoadError(error instanceof Error ? error.message : String(error)))
       .finally(() => setLoading(false))
   }, [])
-
-  useEffect(() => {
-    if (!useCases.length) return
-    const params = new URLSearchParams(window.location.search)
-    const id = params.get('uc')
-    if (id) setSelected(getUseCase(useCases, id) ?? null)
-  }, [useCases])
-
-  useEffect(() => {
-    const url = new URL(window.location.href)
-    if (selected) url.searchParams.set('uc', selected.id)
-    else url.searchParams.delete('uc')
-    window.history.replaceState({}, '', url)
-  }, [selected])
 
   const results = useMemo(() => searchUseCases(useCases, query, filters), [useCases, query, filters])
   const categories = useMemo(() => {
@@ -427,23 +427,135 @@ function App() {
     return ids.map((id) => getUseCase(useCases, id)).filter((item): item is UseCase => Boolean(item))
   }, [toolkitView, savedIds, triedIds, recentIds, useCases])
 
+
+  const routeSnapshot = (overrides: Partial<AtlasRouteState> = {}): AtlasRouteState => {
+    const base: AtlasRouteState = {
+      tab: activeTab,
+      query,
+      filters,
+      browseAll,
+      ideaQuery,
+      ideaMoment,
+      ideaTime,
+      startRole,
+      toolkitView,
+      useCaseId: selected?.id ?? '',
+      ideaId: selectedIdea?.id ?? '',
+    }
+    return { ...base, ...overrides, filters: overrides.filters ?? base.filters }
+  }
+
+  const writeRoute = (overrides: Partial<AtlasRouteState>, mode: 'push' | 'replace' = 'replace', historyState: Record<string, unknown> = {}) => {
+    const nextUrl = buildAtlasUrl(window.location.href, routeSnapshot(overrides))
+    if (nextUrl === window.location.href) return
+    if (mode === 'push') window.history.pushState(historyState, '', nextUrl)
+    else window.history.replaceState(historyState, '', nextUrl)
+  }
+
+  useEffect(() => {
+    if (!useCases.length || !quickIdeas.length) return
+    const applyLocation = () => {
+      const route = parseAtlasRoute(window.location.search)
+      setActiveTab(route.tab)
+      setQuery(route.query)
+      setFilters(route.filters)
+      setBrowseAll(route.browseAll)
+      setIdeaQuery(route.ideaQuery)
+      setIdeaMoment(route.ideaMoment)
+      setIdeaTime(route.ideaTime)
+      setStartRole(route.startRole)
+      setToolkitView(route.toolkitView)
+      setSelected(route.useCaseId ? getUseCase(useCases, route.useCaseId) ?? null : null)
+      setSelectedIdea(route.ideaId ? quickIdeas.find((idea) => idea.id === route.ideaId) ?? null : null)
+    }
+    applyLocation()
+    window.addEventListener('popstate', applyLocation)
+    return () => window.removeEventListener('popstate', applyLocation)
+  }, [useCases, quickIdeas])
+
+  useEffect(() => {
+    if (loading) return
+    const nextUrl = buildAtlasUrl(window.location.href, routeSnapshot())
+    if (nextUrl !== window.location.href) window.history.replaceState(window.history.state, '', nextUrl)
+  }, [loading, activeTab, query, filters, browseAll, ideaQuery, ideaMoment, ideaTime, startRole, toolkitView, selected?.id, selectedIdea?.id])
+
+
   const openUseCase = (item: UseCase) => {
+    writeRoute({ useCaseId: item.id, ideaId: '' }, selected || selectedIdea ? 'replace' : 'push', { atlasOverlay: true })
     setSelectedIdea(null)
     setSelected(item)
     setRecentIds((ids) => [item.id, ...ids.filter((id) => id !== item.id)].slice(0, 12))
   }
   const toggleSaved = (id: string) => setSavedIds((ids) => toggleStoredId(ids, id))
   const toggleTried = (id: string) => setTriedIds((ids) => toggleStoredId(ids, id))
-  const openIdea = (idea: QuickIdea) => setSelectedIdea(idea)
-
-  const quickSearch = (value: string) => { setActiveTab('discover'); setQuery(value); setFilters(emptyFilters); setBrowseAll(false); window.scrollTo({ top: 0, behavior: 'smooth' }) }
+  const openIdea = (idea: QuickIdea) => {
+    writeRoute({ ideaId: idea.id, useCaseId: '', tab: 'ideas' }, selected || selectedIdea ? 'replace' : 'push', { atlasOverlay: true })
+    setActiveTab('ideas')
+    setSelected(null)
+    setSelectedIdea(idea)
+  }
+  const closeOverlay = () => {
+    if (window.history.state?.atlasOverlay) window.history.back()
+    else { setSelected(null); setSelectedIdea(null) }
+  }
+  const changeTab = (tab: AtlasTab) => {
+    writeRoute({ tab, useCaseId: '', ideaId: '' }, 'push', { atlasNav: true })
+    setSelected(null)
+    setSelectedIdea(null)
+    setActiveTab(tab)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  const resetHome = () => {
+    writeRoute({ tab: 'discover', query: '', filters: emptyFilters, browseAll: false, ideaId: '', useCaseId: '' }, 'push', { atlasNav: true })
+    setActiveTab('discover')
+    setQuery('')
+    setFilters(emptyFilters)
+    setBrowseAll(false)
+    setSelected(null)
+    setSelectedIdea(null)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+  const quickSearch = (value: string) => {
+    writeRoute({ tab: 'discover', query: value, filters: emptyFilters, browseAll: false, useCaseId: '', ideaId: '' }, 'push', { atlasNav: true })
+    setActiveTab('discover')
+    setQuery(value)
+    setFilters(emptyFilters)
+    setBrowseAll(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
   const applyFinder = (task: string, role: string, software: string, level: string) => {
+    const nextFilters = { ...emptyFilters, role, software, level }
+    writeRoute({ tab: 'discover', query: task, filters: nextFilters, browseAll: false, useCaseId: '', ideaId: '' }, 'push', { atlasNav: true })
     setActiveTab('discover')
     setQuery(task)
-    setFilters({ ...emptyFilters, role, software, level })
+    setFilters(nextFilters)
+    setBrowseAll(false)
     setFinderOpen(false)
     window.setTimeout(() => document.getElementById('library')?.scrollIntoView({ behavior: 'smooth' }), 50)
   }
+  const copyCurrentView = async () => {
+    await navigator.clipboard.writeText(window.location.href)
+    setViewLinkCopied(true)
+    window.setTimeout(() => setViewLinkCopied(false), 1600)
+  }
+
+  const overlayOpen = Boolean(selected || selectedIdea || finderOpen || mobileFiltersOpen)
+  useEffect(() => {
+    if (!overlayOpen) return
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      if (mobileFiltersOpen) setMobileFiltersOpen(false)
+      else if (finderOpen) setFinderOpen(false)
+      else if (selected || selectedIdea) closeOverlay()
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [overlayOpen, mobileFiltersOpen, finderOpen, selected?.id, selectedIdea?.id])
 
   if (loading) return <div className="loading-screen"><div className="brand-mark">AI</div><h1>Loading AI Use Case Atlas</h1><p>กำลังโหลด use cases และ quick ideas...</p></div>
   if (loadError) return <div className="loading-screen error"><h1>โหลดข้อมูลไม่สำเร็จ</h1><p>{loadError}</p><button onClick={() => window.location.reload()}>ลองใหม่</button></div>
@@ -451,20 +563,20 @@ function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => { setActiveTab('discover'); setQuery(''); setFilters(emptyFilters); setBrowseAll(false) }}>
+        <button className="brand" onClick={resetHome}>
           <span className="brand-mark">AI</span><span><strong>Use Case Atlas</strong><small>ChatGPT for TR</small></span>
         </button>
         <nav className="desktop-nav">
-          <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => setActiveTab('discover')}>ค้นหา Use Case</button>
-          <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => setActiveTab('ideas')}>{quickIdeas.length} Quick Ideas</button>
-          <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => setActiveTab('toolkit')}>My Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
+          <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => changeTab('discover')}>ค้นหา Use Case</button>
+          <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => changeTab('ideas')}>{quickIdeas.length} Quick Ideas</button>
+          <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => changeTab('toolkit')}>My Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
           <a href="https://github.com/bokoboss/ai-usecase-atlas" target="_blank" rel="noreferrer">GitHub</a>
         </nav>
       </header>
       <nav className="mobile-nav" aria-label="Primary">
-        <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => setActiveTab('discover')}>ค้นหา</button>
-        <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => setActiveTab('ideas')}>Ideas</button>
-        <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => setActiveTab('toolkit')}>Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
+        <button className={activeTab === 'discover' ? 'active' : ''} onClick={() => changeTab('discover')}>ค้นหา</button>
+        <button className={activeTab === 'ideas' ? 'active' : ''} onClick={() => changeTab('ideas')}>Ideas</button>
+        <button className={activeTab === 'toolkit' ? 'active' : ''} onClick={() => changeTab('toolkit')}>Toolkit{savedIds.length ? ` · ${savedIds.length}` : ''}</button>
       </nav>
 
       {activeTab === 'discover' ? <>
@@ -481,7 +593,7 @@ function App() {
 
         <section className={searchMode ? "start-here content-width search-hidden" : "start-here content-width"}><div className="section-heading"><div><small>01 · START HERE BY ROLE</small><h2>เริ่มจากงานที่ใกล้ตัวคุณที่สุด</h2><p>เลือกบทบาทก่อน Atlas จะจัด 4 จุดเริ่มที่เหมาะกับงานจริงของคุณ โดยไล่จากงานที่ลองได้ง่ายไปสู่งานที่ต่อยอดได้</p></div></div><div className="role-chips">{roleNames.map((role) => <button key={role} className={startRole === role ? 'active' : ''} onClick={() => setStartRole(role)}>{role}</button>)}</div><div className="mini-case-grid">{roleStartItems.map((item, index) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label={`STEP ${index + 1}`} />)}</div></section>
 
-        <section className={searchMode ? "quick-win-section content-width search-hidden" : "quick-win-section content-width"}><div className="section-heading"><div><small>02 · 5-MINUTE QUICK WINS</small><h2>อยากลองทันที เลือกงานเล็กก่อน</h2><p>4 งานที่ใช้เวลาเริ่มต้นน้อย เหมาะสำหรับเห็นประโยชน์จาก AI ก่อนขยับไป workflow ที่ซับซ้อน</p></div><button className="section-action" onClick={() => setActiveTab('ideas')}>ดู Quick Ideas →</button></div><div className="quick-win-grid">{quickWins.slice(0, 4).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="5 นาที" />)}</div></section>
+        <section className={searchMode ? "quick-win-section content-width search-hidden" : "quick-win-section content-width"}><div className="section-heading"><div><small>02 · 5-MINUTE QUICK WINS</small><h2>อยากลองทันที เลือกงานเล็กก่อน</h2><p>4 งานที่ใช้เวลาเริ่มต้นน้อย เหมาะสำหรับเห็นประโยชน์จาก AI ก่อนขยับไป workflow ที่ซับซ้อน</p></div><button className="section-action" onClick={() => changeTab('ideas')}>ดู Quick Ideas →</button></div><div className="quick-win-grid">{quickWins.slice(0, 4).map((item) => <MiniCaseCard key={item.id} item={item} onOpen={openUseCase} label="5 นาที" />)}</div></section>
 
         <section className={searchMode ? "coverage-strip content-width search-hidden" : "coverage-strip content-width"}>
           <div><strong>{useCases.length}</strong><span>Use cases</span></div><div><strong>{quickIdeas.length}</strong><span>Quick ideas</span></div><div><strong>{categories.length}</strong><span>Work categories</span></div><div><button onClick={() => setFinderOpen(true)}>Guided Finder →</button><span>ถ้ายังไม่รู้จะค้นอะไร</span></div>
@@ -500,9 +612,9 @@ function App() {
 
           <div className="results-panel">
             <button className="mobile-filter-button" onClick={() => setMobileFiltersOpen(true)}>ตัวกรอง{activeFilterCount ? ` · ${activeFilterCount}` : ''}</button>
-            <div className="results-head"><div><small>{searchMode ? 'SEARCH RESULTS' : '03 · EXPLORE THE LIBRARY'}</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : browseAll ? 'คลัง Use Case' : 'สำรวจเพิ่มเติมจากคลัง'}</h2></div><strong>{results.length} รายการ</strong></div>
+            <div className="results-head"><div><small>{searchMode ? 'SEARCH RESULTS' : '03 · EXPLORE THE LIBRARY'}</small><h2>{query ? `ผลลัพธ์สำหรับ “${query}”` : browseAll ? 'คลัง Use Case' : 'สำรวจเพิ่มเติมจากคลัง'}</h2></div><div className="results-head-actions"><strong>{results.length} รายการ</strong><button onClick={copyCurrentView}>{viewLinkCopied ? 'คัดลอกลิงก์แล้ว' : 'แชร์หน้านี้'}</button></div></div>
             <p className="results-subnote">{searchMode ? 'ผลลัพธ์เรียงตามความตรงกับคำค้น และรวมรายการที่ซ้ำเชิงงานมากไว้เป็น variant ในหน้ารายละเอียด' : browseAll ? 'กำลังแสดงคลังแบบกว้างขึ้น ใช้ Search หรือ Filter เมื่อต้องการเจาะงานเฉพาะ' : 'เริ่มจาก 24 รายการแนะนำก่อน เพื่อไม่ให้หน้าแรกกลายเป็นรายการยาวเกินไป'}</p>
-            <div className="usecase-grid">{results.slice(0, resultLimit).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} key={item.id} />)}</div>
+            <div className="usecase-grid">{results.slice(0, resultLimit).map((item) => <UseCaseCard item={item} onOpen={openUseCase} saved={savedIds.includes(item.id)} tried={triedIds.includes(item.id)} onToggleSaved={() => toggleSaved(item.id)} onToggleTried={() => toggleTried(item.id)} key={item.id} />)}</div>
             {!searchMode && !browseAll && results.length > resultLimit && <div className="browse-more"><div><strong>ต้องการสำรวจทั้งคลัง?</strong><span>เปิดรายการเพิ่ม หรือใช้ Search / Filter เพื่อเจาะงานที่ต้องการ</span></div><button onClick={() => setBrowseAll(true)}>ดู use case เพิ่ม →</button></div>}
             {(searchMode || browseAll) && results.length > resultLimit && <div className="result-note">กำลังแสดง {resultLimit} รายการแรก — ใช้ Search หรือ Filter เพื่อเจาะให้แคบลง</div>}
             {!results.length && <div className="empty-state"><h3>ยังไม่พบ use case ที่ตรง</h3><p>ลองใช้คำสั้นลง เช่น “Excel”, “รายงาน”, “ประชุม”, “OpenRoads”, “Revit”, “VISSIM” หรือกดล้าง filter</p></div>}
@@ -511,11 +623,11 @@ function App() {
       </> : activeTab === 'ideas' ? <main className="ideas-page content-width">
         <div className="ideas-hero"><div className="eyebrow">{quickIdeas.length} QUICK IDEAS</div><h1>ยังนึกไม่ออกว่าจะใช้ AI ทำอะไร?</h1><p>เริ่มจาก “ช่วงเวลาที่กำลังทำงาน” หรือเวลาที่มี แล้วค่อยเจาะไอเดียที่ตรงกับงานแทนการเลื่อนดูรายการทั้งหมด</p><div className="idea-search"><SearchIcon /><input value={ideaQuery} onChange={(e) => setIdeaQuery(e.target.value)} placeholder="ค้นไอเดีย เช่น งานเลขา, cost, QGIS, VISSIM, report..."/><span>{visibleIdeas.length}</span></div><div className="idea-filter-block"><small>กำลังทำอะไรอยู่?</small><div className="idea-filter-chips"><button className={!ideaMoment ? 'active' : ''} onClick={() => setIdeaMoment('')}>ทั้งหมด</button>{ideaMoments.map(([name, count]) => <button key={name} className={ideaMoment === name ? 'active' : ''} onClick={() => setIdeaMoment(name)}>{name} · {count}</button>)}</div></div><div className="idea-filter-block"><small>มีเวลาประมาณเท่าไร?</small><div className="idea-filter-chips"><button className={!ideaTime ? 'active' : ''} onClick={() => setIdeaTime('')}>ทุกช่วง</button>{ideaTimes.map(([name, count]) => <button key={name} className={ideaTime === name ? 'active' : ''} onClick={() => setIdeaTime(name)}>{name} · {count}</button>)}</div></div></div>
         <div className="ideas-grid">{visibleIdeas.slice(0, 120).map((idea) => <button className={idea.useCaseId === 'Idea Only' ? 'idea-card idea-only' : 'idea-card'} key={idea.id} onClick={() => openIdea(idea)}><span>{idea.id}</span><h3>{idea.idea}</h3><p>{idea.role}</p><div><small>{idea.surface}</small><small>{ideaTimeBucket(idea.time)}</small><small>{idea.useCaseId === 'Idea Only' ? 'QUICK GUIDE →' : `USE CASE ${idea.useCaseId} →`}</small></div></button>)}</div>{visibleIdeas.length > 120 && <div className="result-note">แสดง 120 ไอเดียแรก — เลือกช่วงงาน/เวลา หรือค้นคำเพิ่มเพื่อเจาะให้แคบลง</div>}
-      </main> : <main className="toolkit-page content-width"><div className="toolkit-hero"><div className="eyebrow">MY AI TOOLKIT</div><h1>Use cases ที่เป็นของคุณ</h1><p>รายการเดียว ไม่ซ้ำการ์ด — ใช้สถานะ Saved / Tried / Recent เพื่อกลับมาทำงานต่อได้เร็ว</p><div className="toolkit-filter-chips"><button className={toolkitView === 'all' ? 'active' : ''} onClick={() => setToolkitView('all')}>ทั้งหมด</button><button className={toolkitView === 'saved' ? 'active' : ''} onClick={() => setToolkitView('saved')}>★ เก็บไว้ · {savedItems.length}</button><button className={toolkitView === 'tried' ? 'active' : ''} onClick={() => setToolkitView('tried')}>✓ ลองแล้ว · {triedItems.length}</button><button className={toolkitView === 'recent' ? 'active' : ''} onClick={() => setToolkitView('recent')}>ล่าสุด · {recentItems.length}</button></div><p className="toolkit-storage-note">สถานะ Toolkit เก็บใน browser/device นี้เท่านั้น</p></div><ToolkitSection title={toolkitView === 'all' ? 'รายการของคุณ' : toolkitView === 'saved' ? '★ เก็บไว้' : toolkitView === 'tried' ? '✓ ลองแล้ว' : 'ล่าสุด'} subtitle={toolkitView === 'all' ? 'รวมรายการโดยไม่แสดง use case เดียวกันซ้ำหลายส่วน' : 'กรองตามสถานะที่เลือก'} items={toolkitItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} /></main>}
+      </main> : <main className="toolkit-page content-width"><div className="toolkit-hero"><div className="eyebrow">MY AI TOOLKIT</div><h1>Use cases ที่เป็นของคุณ</h1><p>รายการเดียว ไม่ซ้ำการ์ด — ใช้สถานะ Saved / Tried / Recent เพื่อกลับมาทำงานต่อได้เร็ว</p><div className="toolkit-filter-chips"><button className={toolkitView === 'all' ? 'active' : ''} onClick={() => setToolkitView('all')}>ทั้งหมด</button><button className={toolkitView === 'saved' ? 'active' : ''} onClick={() => setToolkitView('saved')}>★ เก็บไว้ · {savedItems.length}</button><button className={toolkitView === 'tried' ? 'active' : ''} onClick={() => setToolkitView('tried')}>✓ ลองแล้ว · {triedItems.length}</button><button className={toolkitView === 'recent' ? 'active' : ''} onClick={() => setToolkitView('recent')}>ล่าสุด · {recentItems.length}</button></div><p className="toolkit-storage-note">สถานะ Toolkit เก็บใน browser/device นี้เท่านั้น</p></div><ToolkitSection title={toolkitView === 'all' ? 'รายการของคุณ' : toolkitView === 'saved' ? '★ เก็บไว้' : toolkitView === 'tried' ? '✓ ลองแล้ว' : 'ล่าสุด'} subtitle={toolkitView === 'all' ? 'รวมรายการโดยไม่แสดง use case เดียวกันซ้ำหลายส่วน' : 'กรองตามสถานะที่เลือก'} items={toolkitItems} onOpen={openUseCase} savedIds={savedIds} triedIds={triedIds} onToggleSaved={toggleSaved} onToggleTried={toggleTried} /></main>}
 
       <footer className="site-footer"><div><strong>AI Use Case Atlas</strong><span>TR BU · From “ไม่รู้จะใช้ AI ทำอะไร” → “ลองใช้กับงานจริงวันนี้”</span></div><span>{useCases.length} use cases · {quickIdeas.length} quick ideas</span></footer>
-      {selected && <DetailPanel item={selected} allUseCases={useCases} onClose={() => setSelected(null)} onOpen={openUseCase} saved={savedIds.includes(selected.id)} tried={triedIds.includes(selected.id)} onToggleSaved={() => toggleSaved(selected.id)} onToggleTried={() => toggleTried(selected.id)} />}
-      {selectedIdea && <IdeaDetailPanel idea={selectedIdea} linkedUseCase={selectedIdea.useCaseId !== 'Idea Only' ? getUseCase(useCases, selectedIdea.useCaseId) : null} onClose={() => setSelectedIdea(null)} onOpenUseCase={openUseCase} />}
+      {selected && <DetailPanel item={selected} allUseCases={useCases} onClose={closeOverlay} onOpen={openUseCase} saved={savedIds.includes(selected.id)} tried={triedIds.includes(selected.id)} onToggleSaved={() => toggleSaved(selected.id)} onToggleTried={() => toggleTried(selected.id)} />}
+      {selectedIdea && <IdeaDetailPanel idea={selectedIdea} linkedUseCase={selectedIdea.useCaseId !== 'Idea Only' ? getUseCase(useCases, selectedIdea.useCaseId) : null} onClose={closeOverlay} onOpenUseCase={openUseCase} />}
       {finderOpen && <GuidedFinder roles={roleNames.slice(0, 30)} software={softwareNames} onClose={() => setFinderOpen(false)} onApply={applyFinder} />}
       {mobileFiltersOpen && <div className="mobile-filter-backdrop" onMouseDown={(event) => { if (event.currentTarget === event.target) setMobileFiltersOpen(false) }}><section className="mobile-filter-sheet"><div className="mobile-filter-head"><div><small>FILTER</small><h2>เจาะให้ตรงงาน</h2></div><button className="icon-button" onClick={() => setMobileFiltersOpen(false)}>×</button></div><FilterSelect label="หมวดงาน" value={filters.category} options={categories} onChange={(value) => setFilters((f) => ({ ...f, category: value }))} /><FilterSelect label="บทบาท" value={filters.role} options={roles} onChange={(value) => setFilters((f) => ({ ...f, role: value }))} /><FilterSelect label="Software / Tool" value={filters.software} options={softwarePairs} onChange={(value) => setFilters((f) => ({ ...f, software: value }))} /><FilterSelect label="ChatGPT Surface" value={filters.surface} options={surfaces} onChange={(value) => setFilters((f) => ({ ...f, surface: value }))} /><label className="filter-field"><span>ระดับ</span><select value={filters.level} onChange={(e) => setFilters((f) => ({ ...f, level: e.target.value }))}><option value="">ทุกระดับ</option>{[1,2,3,4,5].map((level) => <option value={level} key={level}>L{level} · {levelLabels[level]}</option>)}</select></label><div className="mobile-filter-actions"><button onClick={() => setFilters(emptyFilters)}>ล้างทั้งหมด</button><button className="primary" onClick={() => setMobileFiltersOpen(false)}>ดู {results.length} รายการ</button></div></section></div>}
     </div>
