@@ -40,21 +40,23 @@ Phase 5 used several passes rather than a bulk synonym rewrite:
 
 ## Current corpus metrics
 
-After Phase 5:
+After the Phase 5D refinement pass:
 
 | Field | Unique values / 600 | Largest exact duplicate family |
 |---|---:|---:|
-| Pain Point | 442 | 4 |
-| Desired Result | 453 | 4 |
-| Inputs | 445 | 4 |
-| Workflow | 465 | 4 |
-| Human/Engineering Check | 465 | 4 |
+| Pain Point | 476 | 4 |
+| Desired Result | 595 | 2 |
+| Inputs | 479 | 4 |
+| Workflow | 592 | 2 |
+| Human/Engineering Check | 592 | 2 |
 | Prompt Starter | 600 | 1 |
 | Adoption Hook | 600 | 1 |
 
 All 600 workflows contain at least five explicit steps.
 
-Reusing a field across a small family is still allowed when the work genuinely shares a mechanism (for example, closely related traffic-count summaries). The gate prevents broad 5–20 item template families from returning.
+Reusing a Pain Point or Input across a small family is still allowed when the work genuinely shares a mechanism. For Output / Workflow / Human Check, the exact-duplicate cap is tighter (maximum 2) because those fields must distinguish what the user will actually do and receive.
+
+Phase 5D also removed 98 generated “เฉพาะงานนี้:” markers. Where a record had a generic family result plus a task-specific suffix, the generic base was discarded and the task-specific deliverable became the actual Desired Result.
 
 ## Full-corpus quality gate
 
@@ -67,11 +69,13 @@ Reusing a field across a small family is still allowed when the work genuinely s
 - at least 5 workflow steps,
 - Prompt Starter synchronized with title, output and human check,
 - legacy generic/template phrases forbidden,
-- exact duplicate family size ≤ 4 in user-facing detail fields,
+- Pain Point / Inputs exact duplicate family size ≤ 4,
+- Desired Result / Workflow / Human Check exact duplicate family size ≤ 2,
 - no record with the entire detail fingerprint duplicated,
 - vendor/primary sources required for software-heavy I/J/K/L cases,
 - targeted vendor-source rules for Civil 3D/OpenRoads/OpenRail/ETABS/SAP2000 and cross-tool OpenAI workflows,
-- a regression watchlist for known near-duplicate pairs.
+- a regression watchlist for known near-duplicate pairs,
+- a ban on generated-template markers such as “เฉพาะงานนี้:”.
 
 ## Source policy
 
@@ -90,3 +94,26 @@ Every Use Case should answer five questions before the user even copies the prom
 5. What must a human or engineer verify before relying on the result?
 
 A new Use Case that cannot answer these specifically should not be added to the Atlas.
+
+
+## Phase 5D — post-merge semantic refinement
+
+After the first full Phase 5 merge, a second audit focused on **semantic overlap**, not only exact text duplication.
+
+High-overlap pairs were explicitly separated by moment-of-need and deliverable, including:
+
+- cross-meeting action backlog vs minutes continuity tracker,
+- traffic-count readiness QA vs general pre-analysis data QA,
+- project document search vs curated internal FAQ,
+- raw lessons-learned extraction vs reusable lessons portal,
+- position-specific CV evidence vs mandatory qualification gate,
+- preliminary sight-distance screening vs audit of an existing calculation chain,
+- final submission sign-off vs reusable submission checklist template.
+
+Software/Web families were also made more specific. For example, VBA monthly automation, VBA-to-Python migration, PDF OCR review, Git issue templates, document-search portals, map dashboards and 2D/3D viewers now have distinct Desired Results rather than sharing a family-level output sentence.
+
+## Source spot-check
+
+The source policy remains selective rather than forcing citations on every engineering judgement item. Current official-source families used for capability-dependent workflows include OpenAI Help, Autodesk Help/API documentation, Bentley OpenRoads/OpenRail product documentation, CSI developer documentation, PTV Vissim help, Microsoft Learn, QGIS documentation, GitHub Docs, Python documentation, OWASP and Bluebeam support.
+
+The project TOR/design criteria/contract/baseline still override generic web material for project-specific engineering requirements.
